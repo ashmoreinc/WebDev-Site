@@ -1,0 +1,72 @@
+/*  Global control  */
+body {
+    padding-top: 70px; /* Adds some padding at the top so no content is hidden by the nav bar*/
+}
+
+/*  Account login/sign-up settings  */
+.account-section {
+    margin-top: 25px;
+    padding-top: 10px;
+    background-color: #eeeeee;
+
+    border: 1px solid #d2d2d2;
+    border-radius: 5px;
+}
+
+.account-section .hidden {
+    display: none;
+}
+
+/*  Profile settings    */
+.jumbotron.profile-banner {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.profile-banner .profile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 250px;
+    max-height: 250px;
+
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+}
+
+.profile-banner .profile-info {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* Search widgets */
+.search-results .users-results .result {
+    background-color: #eeeeee;
+
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.search-results .users-results .result .profile-image img{
+    max-height: 100%;
+    max-width: 100%;
+
+    object-fit: contain;
+
+    padding: 5%;
+}
+
+.search-results .users-results .result .content .user-info{
+    display: block;
+    padding: 10px 10px 0;
+    vertical-align: middle;
+}
+.search-results .users-results .result .content .user-bio {
+    padding: 0 10px 10px;
+}
+
+.search-results .users-results .result .interact {
+    padding: 10px 15px 10px 15px;
+}
