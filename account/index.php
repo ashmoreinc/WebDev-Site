@@ -59,7 +59,7 @@ if (!is_null($conn)){
                 let un_fld = document.getElementById("username-input-field");
                 let un_lbl = document.getElementById("username-taken-lbl");
                 let un_inp = document.getElementById("username");
-                username_taken(un_inp.value, "<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/php/username_exists.php" ?>", function(data) {
+                username_taken(un_inp.value, "<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/php/ajax/username_exists.php" ?>", function(data) {
                     switch (data) {
                         case "true":
                             if(un_lbl.classList.contains("hidden")) {
@@ -155,10 +155,6 @@ if (!is_null($conn)){
                     <!-- Thought form-check is made for check boxes, there is no <a> tag formatting, but this will work-->
                     <div class="form-group form-check form-check-inline">
                         <a href="#" onclick="toggle_login_signup()">Create an account</a>
-                    </div>
-
-                    <div class="form-group form-check form-check-inline">
-                        <a href="#">Forgot password</a> <!-- TODO Create feature or remove button -->
                     </div>
 
                     <br>

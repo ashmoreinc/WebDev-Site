@@ -18,7 +18,6 @@ if ($logged_on){
 }
 // Get the data for the users page
 $pageUser = null;
-
 // If there is a user id given, check the database for it
 if(isset($_GET["user"])){
     $uname = $_GET["user"];
@@ -28,7 +27,9 @@ if(isset($_GET["user"])){
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             try {
-                if ($row["id"] == $curUser->getId()) {
+                if(is_null($curUser)){
+                    $pageUser = new User($row["id"]);
+                } else if ($row["id"] == $curUser->getId()) {
                     $pageUser = new User($row["id"], true);
                 } else {
                     $pageUser = new User($row["id"]);
@@ -55,7 +56,7 @@ if(isset($_GET["user"])){
             // Import the header from a central location
             require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
         ?>
-        </head>
+    </head>
     <body>
     <?php
         // Import the navbar
@@ -67,7 +68,6 @@ if(isset($_GET["user"])){
             <div class="row">
                 <?php
                     if(!is_null($pageUser)){ //  If a user for this page has been set, create the header features for a full profile
-                        // TODO Implement other page features once the settings data has been added to the user table
                         ?>
                         <div class="profile-img col-md-4">
                             <?php
@@ -83,12 +83,45 @@ if(isset($_GET["user"])){
                             <h1 class="display-4"><?php echo $pageUser->getName(); ?></h1>
                             <p class="lead">@<?php echo $pageUser->getUsername() ?></p>
                             <hr class="my-4">
-                            <p>Here is where you will find the users bio if they have one set.</p>
+                            <p><?php
+
+                                $bio = $pageUser->getBio();
+
+                                if(is_null($bio)){
+                                    echo "This user does not have a bio.";
+                                } else if($bio == "") {
+                                    echo "This user does not have a bio.";
+                                } else {
+                                    echo $bio;
+                                }
+
+                                ?></p>
                             <?php
-                                // TODO Change the follow button when following has been implemented.
-                                // TODO Fix the button display issue where the follow button overlaps the bio (reproducible on half display 1080p monitor)
                                 if(!$pageUser->getIsCurrentUser()){ // Only show the follow button if it is not the current user page
-                                    ?> <a class="profile-btn btn btn-dark btn-md" href="#" role="button">Follow</a> <?php
+                                    // Check follow status
+
+                                    $isFollowing = false;
+
+                                    $sql = "SELECT isFollowing FROM user_connections WHERE firstUserID=" . $curUser->getId() . " AND secondUserID=" . $pageUser->getId();
+
+                                    $result = $conn->query($sql);
+
+                                    if($result->num_rows > 0) {
+                                        $status = $result->fetch_assoc()["isFollowing"];
+
+                                        $isFollowing = $status == 1;
+                                    }
+
+                                    if($isFollowing) {
+                                        ?>
+                                            <button class="profile-btn btn btn-dark btn-md" role="button" onmouseup="unfollow('<?php echo $pageUser->getUsername(); ?>', this)">Unfollow</button>
+                                        <?php
+
+                                    } else {
+                                        ?>
+                                            <button class="profile-btn btn btn-dark btn-md" role="button" onmouseup="follow('<?php echo $pageUser->getUsername(); ?>', this)">Follow</button>
+                                        <?php
+                                    }
                                 }
                             ?>
                         </div>

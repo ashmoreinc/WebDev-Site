@@ -47,6 +47,8 @@ if($logged_on){ // Logged in
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountMenu">
                         <a class="dropdown-item" href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/account/profile/index.php?user=<?php echo $curUser->getUsername(); ?>"><?php echo $curUser->getUsername(); ?></a>
                         <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="http://<?php echo $_SERVER["SERVER_NAME"]; ?>/account/profile/settings/">Settings</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/account/logout.php">Logout</a>
                     </div>
                 </li>

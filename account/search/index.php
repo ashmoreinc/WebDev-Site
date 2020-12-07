@@ -79,7 +79,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
 
                 if($logged_on && !is_null($curUser)) {
                     $curUserID = $curUser->getId();
-                    $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id, user_connections.firstUserID, user_connections.secondUserID, user_connections.isFriend, user_connections.isBlocked 
+                    $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id, user_connections.firstUserID, user_connections.secondUserID, user_connections.isFollowing, user_connections.isBlocked 
                             FROM users
                             LEFT JOIN user_connections
                             ON ((users.id=user_connections.firstUserID AND user_connections.secondUserID=$curUserID) OR (users.id=user_connections.secondUserID AND user_connections.firstUserID=$curUserID)) OR 
@@ -88,17 +88,18 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
                                 AND (isBlocked=0 OR isBlocked IS NULL)
                                 AND id!=" . $curUserID;
                 } else {
-                    $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename
+                    $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id
                             FROM users
                             WHERE username LIKE '%$query%'
                                 OR name LIKE '$query'
                                 OR bio LIKE '%$query%'";
                 }
+
                 $results = $conn->query($sql);
 
                 $output = 0;
 
-                if($results->num_rows > 0) {
+                if($results->num_rows > 0) { // TODO Load limit, load more button and users tab
                     while($row = $results->fetch_assoc()){
                         $output += 1;
                         ?>
@@ -117,11 +118,42 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
                                     </div>
                                     <hr>
                                     <div class="user-bio row">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas auctor id turpis vitae porta. Nullam dapibus nisi a odio tempor tincidunt. Suspendisse potenti. Sed aliquet tempor ligula. Cras sed nisi at diam scelerisque tempus. Morbi dignissim a dui sed sagittis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur ipsum sapien, sodales sit amet cursus a, pellentesque vitae magna. Curabitur quis molestie dolor, volutpat suscipit neque. Interdum et malesuada fames ac ante ipsum primis in faucibus. </p>
+                                        <p><?php
+
+                                            if(is_null($row["bio"])){
+                                                echo "This user does not have a bio.";
+                                            } else if($row["bio"] == "") {
+                                                echo "This user does not have a bio.";
+                                            } else {
+                                                echo $row["bio"];
+                                            }
+
+                                            ?></p>
                                     </div>
                                 </div>
                                 <div class="interact col-md-2">
-                                    <button type="button" class="btn btn-block btn-dark">Follow</button>
+                                    <?php
+                                    $createFollowButton = true;
+
+                                    if($logged_on){
+                                        if(isset($row["firstUserID"])) {
+                                            if ($row["firstUserID"] == $curUser->getId()) {
+                                                if($row["isFollowing"] == 1) {
+                                                    $createFollowButton = false;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if($createFollowButton) {
+                                        ?> <button type="button" class="btn btn-block btn-dark" onmouseup="follow('<?php echo  $row["username"]; ?>', this)">Follow</button> <?php
+                                    } else {
+                                        ?> <button type="button" class="btn btn-block btn-dark" onmouseup="unfollow('<?php echo $row["username"]; ?>', this)">Unfollow</button> <?php
+                                    }
+
+
+                                    ?>
+
                                 </div>
                             </div>
                         </div>

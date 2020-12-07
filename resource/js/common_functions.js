@@ -24,3 +24,46 @@ function username_taken(username, url, handleDataFunc){
     // tell the handle function that no username was set
     handleDataFunc("username not set");
 }
+
+function updateFollow(username, action, url, handleDataFunc) {
+
+    if(username !== ""){
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {username: username,
+                    action: action},
+            dataType: "html",
+            success: function(data){
+                handleDataFunc(data);
+            },
+            error: function (){
+                handleDataFunc("could not check username");
+            }
+        });
+    } else {
+        handleDataFunc("username not set");
+    }
+}
+
+function unfollow(username, btn){
+    updateFollow(username, "unfollow", window.location.origin + "/resource/php/ajax/update_follow.php", function(data){
+        if(data === "success") {
+            btn.innerHTML = "Follow";
+            btn.onmouseup = function(){follow(username, btn);};
+        } else {
+            alert(data);
+        }
+    })
+}
+
+function follow(username, btn){
+    updateFollow(username, "follow", window.location.origin + "/resource/php/ajax/update_follow.php", function(data){
+        if(data === "success") {
+            btn.innerHTML = "Unfollow";
+            btn.onmouseup = function(){unfollow(username, btn);};
+        } else {
+            alert(data);
+        }
+    })
+}
