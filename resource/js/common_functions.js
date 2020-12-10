@@ -47,7 +47,7 @@ function updateFollow(username, action, url, handleDataFunc) {
 }
 
 function unfollow(username, btn){
-    updateFollow(username, "unfollow", window.location.origin + "/resource/php/ajax/update_follow.php", function(data){
+    updateFollow(username, "unfollow", window.location.origin + "/resource/ajax/update_follow.php", function(data){
         if(data === "success") {
             btn.innerHTML = "Follow";
             btn.onmouseup = function(){follow(username, btn);};
@@ -58,7 +58,7 @@ function unfollow(username, btn){
 }
 
 function follow(username, btn){
-    updateFollow(username, "follow", window.location.origin + "/resource/php/ajax/update_follow.php", function(data){
+    updateFollow(username, "follow", window.location.origin + "/resource/ajax/update_follow.php", function(data){
         if(data === "success") {
             btn.innerHTML = "Unfollow";
             btn.onmouseup = function(){unfollow(username, btn);};

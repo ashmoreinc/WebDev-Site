@@ -38,11 +38,9 @@ if(isset($_POST["password"])){
     returnWithError("login-password");
 }
 
-// Clean up the user input to prevent any SQL injection attempts or XSS
-require_once $_SERVER["DOCUMENT_ROOT"] . '/resource/php/common_functions.php';
-
-$user = steriliseInput($conn, $_POST["username"]);
-$pass = steriliseInput($conn, $_POST["password"]);
+// We do not need to clean the passwords for xss/sql injection. They are hashed which mitigates this
+$user = $_POST["username"];
+$pass = $_POST["password"];
 
 // Try get the hashed password from the server.
 $results = $conn->query("SELECT id, password FROM users WHERE username='$user'");

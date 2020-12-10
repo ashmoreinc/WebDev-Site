@@ -6,7 +6,6 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreated
 $curUser = null;
 $logged_on = false;
 
-
 try {
     $conn = getConn();
     $logged_on = isLoggedIn($conn);

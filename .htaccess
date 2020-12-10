@@ -1,0 +1,6 @@
+IndexIgnore *
+
+<FilesMatch "\.(gitignore)$">
+Order Deny,Allow
+   Deny from all
+</FilesMatch>

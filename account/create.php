@@ -56,8 +56,10 @@ require_once $_SERVER["DOCUMENT_ROOT"] . '/resource/php/common_functions.php';
 
 $name = steriliseInput($conn, $_POST["name"]);
 $user = steriliseInput($conn, $_POST["username"]);
-$pass = steriliseInput($conn, $_POST["password"]);
-$passconf = steriliseInput($conn, $_POST["passwordconf"]);
+
+// Passwords do not pose a threat, therefore do not need to be cleaned
+$pass = $_POST["password"];
+$passconf = $_POST["passwordconf"];
 
 // Check the passwords match
 if($pass != $passconf){

@@ -59,7 +59,7 @@ if (!is_null($conn)){
                 let un_fld = document.getElementById("username-input-field");
                 let un_lbl = document.getElementById("username-taken-lbl");
                 let un_inp = document.getElementById("username");
-                username_taken(un_inp.value, "<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/php/ajax/username_exists.php" ?>", function(data) {
+                username_taken(un_inp.value, "<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/ajax/username_exists.php" ?>", function(data) {
                     switch (data) {
                         case "true":
                             if(un_lbl.classList.contains("hidden")) {
