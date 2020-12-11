@@ -18,9 +18,10 @@ if ($logged_on){
     $curUser = getLoggedInUser($conn);
 }
 
+// Check the form data
 $updateError = null;
 $updateMessage = null;
-// Check the form data
+
 if($logged_on){
     // Profile
     if(isset($_POST["profile-settings"])) { // TODO: Check if the username is taken
@@ -87,6 +88,7 @@ if($logged_on){
         // TODO: Image resizing?
         // TODO: Delete old image
         if($_POST["submit"] == "delete") {
+            // Remove the image name in the users table
             $sql = "UPDATE users SET displayImageFilename='' WHERE id=" . $curUser->getId();
 
             if ($conn->query($sql)) {
@@ -94,6 +96,12 @@ if($logged_on){
             } else {
                 $updateError = "We could not update your profile image at this time.";
             }
+
+            // Delete the old image
+            $imageName = $curUser->getDisplayImage();
+
+            unlink($_SERVER["DOCUMENT_ROOT"] . "/resource/images/profile/" . $imageName);
+
         } else {
             // Check there is a file for upload
             if (!isset($_FILES["profile-image"])) {
@@ -150,6 +158,7 @@ if($logged_on){
             }
         }
     }
+    // Account
     if(isset($_POST["account-settings"])){
         $password = $_POST["oldPassword"];
         $newPassword = $_POST["newPassword"];
@@ -185,6 +194,7 @@ if($logged_on){
         }
 
     }
+    // Privacy
     if(isset($_POST["privacy-private-settings"])) {
         if(isset($_POST["private"])){
             $sql = null;
@@ -245,6 +255,10 @@ if($logged_on){
             }
         }
     }
+}
+
+if ($logged_on){
+    $curUser = getLoggedInUser($conn);
 }
 
 ?>
