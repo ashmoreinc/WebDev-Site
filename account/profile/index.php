@@ -73,7 +73,7 @@ if(isset($_GET["user"])){
                             <?php
                                 if(is_null($pageUser->getDisplayImage()) or $pageUser->getDisplayImage() == "") {
                                     ?> <img src="http://<?php echo $_SERVER["SERVER_NAME"]; ?>/resource/images/profile/default.jpg"> <?php
-                                } else {sas
+                                } else {
                                     echo "<img src=\"http://" . $_SERVER["SERVER_NAME"] . "/resource/images/profile/" . $pageUser->getDisplayImage() . "\">";
                                 }
 
