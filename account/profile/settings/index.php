@@ -302,7 +302,7 @@ if ($logged_on){
     if($logged_on){ ?>
     <div class="container-fluid row">
         <div class="col-md-2 settings-nav">
-            <div class="dropdown float-rightD">
+            <div class="dropdown float-right">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="navDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Jump too
                 </button>

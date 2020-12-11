@@ -82,7 +82,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
                     $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id, user_connections.firstUserID, user_connections.secondUserID, user_connections.isFollowing, user_connections.isBlocked 
                             FROM users
                             LEFT JOIN user_connections
-                            ON ((users.id=user_connections.firstUserID AND user_connections.secondUserID=$curUserID) OR (users.id=user_connections.secondUserID AND user_connections.firstUserID=$curUserID)) OR 
+                            ON ((users.id=user_connections.firstUserID AND user_connections.secondUserID=$curUserID) OR (users.id=user_connections.secondUserID AND user_connections.firstUserID=$curUserID)) XOR 
                                (users.id=user_connections.firstUserID OR users.id=user_connections.secondUserID)
                             WHERE (username LIKE '%$query%' OR name LIKE '%$query%' OR bio LIKE '%$query%') 
                                 AND (isBlocked=0 OR isBlocked IS NULL)
@@ -108,7 +108,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
                             <div class="row">
                                 <div class="profile-image col-md-2 d-flex justify-content-center">
                                     <a href="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/account/profile/?user=" . $row["username"] ?>">
-                                        <img class="mr-auto ml-auto" src="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/images/profile/" . (is_null($row["displayImageFilename"]) ? "default.jpg" : $row["displayImageFilename"]); ?>">
+                                        <img class="mr-auto ml-auto" src="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/images/profile/" . ((is_null($row["displayImageFilename"]) || $row["displayImageFilename"] == "") ? "default.jpg" : $row["displayImageFilename"]); ?>">
                                     </a>
                                 </div>
                                 <div class="content col-md-8">

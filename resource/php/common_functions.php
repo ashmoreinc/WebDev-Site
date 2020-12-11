@@ -3,6 +3,7 @@
 require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
 require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/couldNotFollowException.php";
 /**
+ * Sterilise a string from possible xss attacks
  * @param $input
  * @return string
  */
@@ -11,6 +12,7 @@ function xssSterilise($input){
 }
 
 /**
+ * Sterilsie a string from possible SQL Injection attacks
  * @param $conn
  * @param $input
  * @return string
@@ -20,9 +22,12 @@ function sqliSterilise($conn, $input){
 }
 
 /**
+ * Sterilise a string from xss and sql injection attacks
  * @param $conn
  * @param $input
  * @return string
+ * @see sqliSterilise()
+ * @see xssSterilise()
  */
 function steriliseInput($conn, $input){
     $input = xssSterilise($input);
@@ -32,6 +37,10 @@ function steriliseInput($conn, $input){
 }
 
 /**
+ * Update a follow entry to a given state
+ *
+ * <p>Update the relationship entry between two users for a follow (or create on if there isn't one already one). By supplying $conn, the given database connection will be used. Else one will be created.</p>
+ *
  * @param $user1ID
  * @param $user2ID
  * @param $state
@@ -41,6 +50,8 @@ function steriliseInput($conn, $input){
  * @throws InvalidArgumentException
  */
 function updateFollow($user1ID, $user2ID, $state, $conn=null){
+    $closeConn = false;
+
     if(gettype($user1ID) != "integer" || gettype($user2ID) != "integer"){
         throw new InvalidArgumentException("userID1 and userID2 arguments must be integers.");
     }
@@ -60,6 +71,7 @@ function updateFollow($user1ID, $user2ID, $state, $conn=null){
     if(is_null($conn)) {
         require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
         $conn = getConn();
+        $closeConn = true;
     }
 
     if(is_null($conn)){
@@ -121,10 +133,13 @@ function updateFollow($user1ID, $user2ID, $state, $conn=null){
 
     // Execute the derived query
     $conn->query($sql);
-    $conn->close();
+    if($closeConn) $conn->close();
 }
 
 /**
+ * Switches a follow between two users from 1 to 0 or vice versa.
+ *
+ * <p>Gets a relationship entry for a follow and then updates it too the opposite. By supplying $conn, the given database connection will be used. Else one will be created.</p>
  * @param $user1ID
  * @param $user2ID
  * @param null $conn
@@ -161,3 +176,77 @@ function switchFollow($user1ID, $user2ID, $conn=null){
 
     updateFollow($user1ID, $user2ID, $state, $conn);
 }
+
+/**
+ * Update a block entry to a given state
+ *
+ * <p>Update the relationship entry between two users for a block(or create on if there isn't one already one). By supplying $conn, the given database connection will be used. Else one will be created.</p>
+ *
+ * @param $user1ID
+ * @param $user2ID
+ * @param $state
+ * @param null $conn
+ * @throws dbConnNotCreatedException
+ */
+function updateBlock($user1ID, $user2ID, $state, $conn=null){
+    $closeConn = false;
+    if(gettype($user1ID) != "integer" || gettype($user2ID) != "integer"){
+        throw new InvalidArgumentException("userID1 and userID2 arguments must be integers.");
+    }
+
+    if(gettype($state) != "boolean" && gettype($state) != "integer"){
+        throw new InvalidArgumentException("state argument must be of type boolean or an integer.");
+    }
+
+    // Make the $state argument usable
+    if(gettype($state) == "integer"){
+        if($state > 1) $state = 1;
+        else if($state < 0) $state = 0;
+    } else { // We can assume $state is a boolean as we have performed a check for it earlier
+        $state = $state ? 1 : 0; // Set state to 1 if true and 0 if false
+    }
+
+    if(is_null($conn)) {
+        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+        $conn = getConn();
+        $closeConn = true;
+    }
+
+    if(is_null($conn)){
+        throw new dbConnNotCreatedException("Could not connect to database");
+    }
+
+    // Check the given users exist
+    $sql1 = "SELECT username FROM users WHERE id=$user1ID";
+    $sql2 = "SELECT username FROM users WHERE id=$user2ID";
+    $result1 = $conn->query($sql1);
+    $result2 = $conn->query($sql2);
+
+    if($result1->num_rows == 0) {
+        throw new InvalidArgumentException("user(1) with given ID does not exist.");
+    }
+
+    if($result2->num_rows == 0) {
+        throw new InvalidArgumentException("user(2) with given ID does not exist.");
+    }
+
+    // Check that a connection is currently present
+    $sql = "SELECT connectionID FROM user_connections WHERE firstUserID=$user1ID AND secondUserID=$user2ID";
+
+    $result = $conn->query($sql);
+
+    if($result->num_rows > 0){
+        // There is an entry. Alter it.
+        $connID = $result->fetch_assoc()["connectionID"];
+
+        $sql = "UPDATE user_connections SET isBlocked=$state, isFollowing=0 WHERE connectionID=$connID";
+    } else {
+        $sql = "INSERT INTO user_connections (firstUserID, secondUserID, isFollowing, isBlocked) 
+                VALUES ($user1ID, $user2ID, 0, $state)";
+    }
+
+    $conn->query($sql);
+    if($closeConn) $conn->close();
+
+}
+

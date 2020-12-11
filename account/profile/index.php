@@ -80,8 +80,48 @@ if(isset($_GET["user"])){
                             ?>
                         </div>
                         <div class="profile-info col-md-8">
-                            <h1 class="display-4"><?php echo $pageUser->getName(); ?></h1>
-                            <p class="lead">@<?php echo $pageUser->getUsername() ?></p>
+                            <div class="row">
+                                <div class="col">
+                                    <h1 class="display-4"><?php echo $pageUser->getName(); ?></h1>
+                                    <p class="lead">@<?php echo $pageUser->getUsername() ?></p>
+                                </div>
+                                <div class="col">
+                                    <?php
+                                        if(!$pageUser->getIsCurrentUser()){
+                                    ?>
+                                        <div class="dropdown float-right user-options">
+                                            <button class="btn btn-outline-dark" type="button" id="userOptions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-three-dots" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                                                </svg>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userOptions">
+                                                <?php
+                                                    // Check for block
+                                                    $sql = "SELECT isBlocked FROM user_connections WHERE firstUserID=" . $curUser->getId() . " AND secondUserID=" . $pageUser->getId();
+
+                                                    $result = $conn->query($sql);
+
+                                                    if($result->num_rows <= 0) {
+                                                        ?> <a class="dropdown-item" onmouseup="block('<?php echo $pageUser->getUsername(); ?>', this);">Block</a> <?php
+                                                    } else {
+                                                        $isBlocked = $result->fetch_assoc()["isBlocked"];
+
+                                                        if($isBlocked == 0) {
+                                                            ?> <a class="dropdown-item" onmouseup="block('<?php echo $pageUser->getUsername(); ?>', this);">Block</a> <?php
+                                                        } else {
+                                                            ?> <a class="dropdown-item" onmouseup="unblock('<?php echo $pageUser->getUsername(); ?>', this);">Unblock</a> <?php
+                                                        }
+                                                    }
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <?php
+                                        }
+                                        ?>
+
+                                </div>
+                            </div>
                             <hr class="my-4">
                             <p><?php
 
@@ -119,7 +159,7 @@ if(isset($_GET["user"])){
 
                                     } else {
                                         ?>
-                                            <button class="profile-btn btn btn-dark btn-md" role="button" onmouseup="follow('<?php echo $pageUser->getUsername(); ?>', this)">Follow</button>
+                                            <button class="profile-btn btn btn-dark btn-md" role="button" onmouseup="follow('<?php echo $pageUser->getUsername(); ?>', this);">Follow</button>
                                         <?php
                                     }
                                 }

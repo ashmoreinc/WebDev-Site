@@ -1,6 +1,6 @@
 <?php
-// Check for POST data
-if(!isset($_POST["username"])){
+
+if(!isset($_POST["username"])) {
     echo "username not provided";
     die();
 }
@@ -43,17 +43,17 @@ if($result->num_rows <= 0) {
 
 $otherUserID = $result->fetch_assoc()["id"];
 
+
 // Run the follow update
 require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
 require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/couldNotFollowException.php";
 
-
 if(isset($_POST["action"])){
     $action = steriliseInput($conn, $_POST["action"]);
 
-    if($action == "unfollow"){
+    if($action == "unblock"){
         $state = false;
-    } else if($action == "follow") {
+    } else if($action == "block") {
         $state = true;
     } else {
         echo "invalid action";
@@ -61,7 +61,7 @@ if(isset($_POST["action"])){
     }
 
     try {
-        updateFollow((int)$curUser->getId(), (int)$otherUserID, $state);
+        updateBlock((int)$curUser->getId(), (int)$otherUserID, $state, $conn);
         echo "success";
     } catch (couldNotFollowException $e) {
         echo "could not follow: " . $e->getMessage();
@@ -73,17 +73,5 @@ if(isset($_POST["action"])){
     die();
 }
 
-/* This will switch the follow if a follow options is not supplied. Not needed now.
-    Won't delete so its a quick implementation if it changes.
-try {
-    switchFollow((int)$curUser->getId(), (int)$otherUserID);
-    echo "success";
-} catch (couldNotFollowException $e) {
-    echo "could not follow: " . $e->getMessage();
-} catch (dbConnNotCreatedException $e) {
-    echo "connection error";
-}
-*/
 echo "no action supplied";
-
 die();

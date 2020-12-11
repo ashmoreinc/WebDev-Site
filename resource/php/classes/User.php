@@ -25,7 +25,7 @@ class User
         try {
             $conn = getConn();
         } catch (\dbConnNotCreatedException $e) {
-            throw new userNotFoundException("Connection is null.", $previous=$e);
+            throw new userNotFoundException("Could not connect to the database.", $previous=$e);
         }
 
         $result = $conn->query("SELECT * FROM users WHERE id=" . $this->id);

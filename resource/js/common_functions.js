@@ -25,11 +25,10 @@ function username_taken(username, url, handleDataFunc){
     handleDataFunc("username not set");
 }
 
-function updateFollow(username, action, url, handleDataFunc) {
-
+function updateFollow(username, action, handleDataFunc) {
     if(username !== ""){
         $.ajax({
-            url: url,
+            url:  window.location.origin + "/resource/ajax/update_follow.php",
             type: 'POST',
             data: {username: username,
                     action: action},
@@ -47,7 +46,7 @@ function updateFollow(username, action, url, handleDataFunc) {
 }
 
 function unfollow(username, btn){
-    updateFollow(username, "unfollow", window.location.origin + "/resource/ajax/update_follow.php", function(data){
+    updateFollow(username, "unfollow", function(data){
         if(data === "success") {
             btn.innerHTML = "Follow";
             btn.onmouseup = function(){follow(username, btn);};
@@ -58,10 +57,58 @@ function unfollow(username, btn){
 }
 
 function follow(username, btn){
-    updateFollow(username, "follow", window.location.origin + "/resource/ajax/update_follow.php", function(data){
+    updateFollow(username, "follow", function(data){
         if(data === "success") {
             btn.innerHTML = "Unfollow";
             btn.onmouseup = function(){unfollow(username, btn);};
+        } else {
+            alert(data);
+        }
+    })
+}
+
+function updateBlock(username, action, handleDataFunc){
+    if(username !== ""){
+        $.ajax({
+            url: window.location.origin + "/resource/ajax/update_block.php",
+            type: 'POST',
+            data: {username: username,
+                action: action},
+            dataType: "html",
+            success: function(data){
+                handleDataFunc(data);
+            },
+            error: function (){
+                handleDataFunc("could not check username");
+            }
+        });
+    } else {
+        handleDataFunc("username not set");
+    }
+}
+
+function block(username, btn, reloadOnSuccess=true){
+    updateBlock(username, "block", function(data){
+        if(data === "success") {
+            btn.innerHTML = "Unblock";
+            btn.onmouseup = function(){
+                unblock(username, btn);
+            };
+            if(reloadOnSuccess) location.reload();
+        } else {
+            alert(data);
+        }
+    })
+}
+
+function unblock(username, btn, reloadOnSuccess=true){
+    updateBlock(username, "unblock", function(data){
+        if(data === "success") {
+            btn.innerHTML = "Block";
+            btn.onmouseup = function(){
+                block(username, btn);
+            };
+            if(reloadOnSuccess) location.reload();
         } else {
             alert(data);
         }
