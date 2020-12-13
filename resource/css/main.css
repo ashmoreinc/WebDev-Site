@@ -6,7 +6,20 @@ body {
 .post {
     background-color: #eeeeee;
     padding: 10px;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
+
+.post-composer {
+    background-color: #eeeeee;
+    padding: 10px;
+
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 
 .post .profile-image img{
     width: 90%;

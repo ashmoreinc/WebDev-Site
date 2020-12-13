@@ -203,6 +203,44 @@ if($logged_on) {
     <div class="container posts-section">
         <?php
 
+        if($pageUser->getIsCurrentUser()){
+            ?>
+
+            <div class="post-composer">
+                <?php
+
+                if(isset($_GET["post-comp-error"])) {
+                    ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php
+                        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
+                        echo steriliseInput($conn, $_GET["post-comp-error"]); ?>
+                    </div>
+                    <?php
+                }
+                if(isset($_GET["post-comp-success"])){
+                    ?>
+                    <div class="alert alert-success" role="alert">
+                        Your post has successfully uploaded.
+                    </div>
+                    <?php
+                }
+                ?>
+                <h3>Compose new post</h3>
+                <hr>
+                <form method="post" action="http://<?php echo $_SERVER["SERVER_NAME"] . "/account/profile/create_post.php"; ?>">
+                    <div class="form-group">
+                        <textarea name="post-content" class="form-control" id="post-input-area" rows="3" placeholder="Tell the world something interesting..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit">Post</button>
+                    </div>
+                </form>
+            </div>
+
+            <?php
+        }
+
         if($isBlocked) {
             ?>
             <div class="alert alert-dark" role="alert">
@@ -215,7 +253,11 @@ if($logged_on) {
             //      Load most recent, scrolls load further back into post history
 
             if($logged_on) {
-                $sql = "SELECT posts.postID, replyToID, content, mediaFilename, posts.datetime as time, post_likes.likeID
+                $sql = "SELECT posts.postID, replyToID, content, mediaFilename, posts.datetime as time, post_likes.likeID, (
+                            SELECT COUNT(*)
+                            FROM post_likes
+                            WHERE post_likes.postID=posts.postID
+                        ) as likes
                         FROM posts
                         LEFT JOIN post_likes
                         ON post_likes.postID = posts.postID and post_likes.userID=" . $curUser->getId() . "
@@ -223,7 +265,11 @@ if($logged_on) {
                         ORDER BY posts.datetime DESC
                         ";
             } else { // Same query, but likeID will always be null
-                $sql = "SELECT posts.postID, replyToID, content, mediaFilename, posts.datetime as time, post_likes.likeID
+                $sql = "SELECT posts.postID, replyToID, content, mediaFilename, posts.datetime as time, post_likes.likeID, (
+                            SELECT COUNT(*)
+                            FROM post_likes
+                            WHERE post_likes.postID=posts.postID
+                        ) as likes
                         FROM posts
                         LEFT JOIN post_likes
                         ON post_likes.likeID = -1
@@ -266,16 +312,27 @@ if($logged_on) {
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <?php
+                                <div class="row">
+                                    <div class="col-">
+                                        <?php echo $row["likes"]; ?>
+                                    </div>
+                                    <div class="col">
+                                        <?php
 
-                                if(is_null($row["likeID"])){
-                                    ?> <button class="btn btn-dark btn-block mt-auto" onclick="switchLike(<?php echo $row["postID"]; ?>, this)">Like</button> <?php
-                                } else {
-                                    ?> <button class="btn btn-dark btn-block mt-auto" onclick="switchLike(<?php echo $row["postID"]; ?>, this)">Unlike</button> <?php
-                                }
+                                        if(is_null($row["likeID"])){
+                                            ?> <button class="btn btn-dark btn-block mt-auto" onclick="switchLike(<?php echo $row["postID"]; ?>, this)">Like</button> <?php
+                                        } else {
+                                            ?> <button class="btn btn-dark btn-block mt-auto" onclick="switchLike(<?php echo $row["postID"]; ?>, this)">Unlike</button> <?php
+                                        }
 
-                                ?>
-                                <button class="btn btn-dark btn-block">Reply</button>
+                                        ?>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button class="btn btn-dark btn-block">Reply</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -291,34 +348,6 @@ if($logged_on) {
             }
         }
         ?>
-        <!-- Post structure
-        <div class="post">
-            <div class="row">
-                <div class="col-md-2 profile-image">
-                    <img src="http://localhost/resource/images/profile/default.jpg">
-                </div>
-                <div class="col-md-8 content">
-                    <div class="row">
-                        <div class="col">
-                            <div class="row">
-                                <h1>Cain</h1>
-                            </div>
-                            <div class="row">
-                                <p>@ashmoreinc</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        Lorem ipsum
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-dark btn-block mt-auto" >Like</button>
-                    <button class="btn btn-dark btn-block">Reply</button>
-                </div>
-            </div>
-        </div> -->
     </div>
 </body>
 </html>
