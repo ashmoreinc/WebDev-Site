@@ -37,27 +37,65 @@ if(isset($_GET["user"])){
             } catch (userNotFoundException $ignored) {}
         }
     }
-
 }
+
+// Check the loggedin users relationships, if any, to this user
+$isBlocked = false;
+$isBlocking = false;
+$isFollowed = false;
+$isFollowing = false;
+
+if($logged_on) {
+    // Check the current users connections to the page user
+    $sql = "SELECT isFollowing, isBlocked 
+            FROM user_connections 
+            WHERE firstUserID=" . $curUser->getId() . "
+                AND secondUserID=" . $pageUser->getId();
+
+    $result = $conn->query($sql);
+
+    if($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+
+        $isBlocking = $row["isBlocked"] == 1;
+        $isFollowing = $row["isFollowing"] == 1;
+    }
+
+    // Check the page users connections to the current users
+    $sql = "SELECT isFollowing, isBlocked 
+            FROM user_connections 
+            WHERE firstUserID=" . $pageUser->getId() . "
+                AND secondUserID=" . $curUser->getId();
+
+    $result = $conn->query($sql);
+
+    if($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+
+        $isBlocked = $row["isBlocked"] == 1;
+        $isFollowed = $row["isFollowing"] == 1;
+    }
+}
+
 
 // TODO: Check the current page is not a private account
 // TODO: Check the current page has not blocked the logged in user
 ?>
 <html lang="en">
-    <head>
-        <?php
-            // Create the title as the user name if there is a user
-            if(!is_null($pageUser)){
-                echo "<title>" . $pageUser->getName() . "</title>";
-            } else {
-                echo "<title>User not found.</title>";
-            }
+<head>
+    <?php
+        // Create the title as the user name if there is a user
+        if(!is_null($pageUser)){
+            echo "<title>" . $pageUser->getName() . "</title>";
+        } else {
+            echo "<title>User not found.</title>";
+        }
 
-            // Import the header from a central location
-            require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
-        ?>
-    </head>
-    <body>
+        // Import the header from a central location
+        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
+    ?>
+</head>
+<body>
     <?php
         // Import the navbar
         require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
@@ -97,21 +135,10 @@ if(isset($_GET["user"])){
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userOptions">
                                                 <?php
-                                                    // Check for block
-                                                    $sql = "SELECT isBlocked FROM user_connections WHERE firstUserID=" . $curUser->getId() . " AND secondUserID=" . $pageUser->getId();
-
-                                                    $result = $conn->query($sql);
-
-                                                    if($result->num_rows <= 0) {
-                                                        ?> <a class="dropdown-item" onmouseup="block('<?php echo $pageUser->getUsername(); ?>', this);">Block</a> <?php
+                                                    if($isBlocking) {
+                                                        ?> <a class="dropdown-item" onmouseup="unblock('<?php echo $pageUser->getUsername(); ?>', this);">Unblock</a> <?php
                                                     } else {
-                                                        $isBlocked = $result->fetch_assoc()["isBlocked"];
-
-                                                        if($isBlocked == 0) {
-                                                            ?> <a class="dropdown-item" onmouseup="block('<?php echo $pageUser->getUsername(); ?>', this);">Block</a> <?php
-                                                        } else {
-                                                            ?> <a class="dropdown-item" onmouseup="unblock('<?php echo $pageUser->getUsername(); ?>', this);">Unblock</a> <?php
-                                                        }
+                                                        ?> <a class="dropdown-item" onmouseup="block('<?php echo $pageUser->getUsername(); ?>', this);">Block</a> <?php
                                                     }
                                                 ?>
                                             </div>
@@ -138,29 +165,17 @@ if(isset($_GET["user"])){
                                 ?></p>
                             <?php
                                 if(!$pageUser->getIsCurrentUser()){ // Only show the follow button if it is not the current user page
-                                    // Check follow status
+                                    if(!$isBlocked && !$isBlocking){
+                                        if($isFollowing) {
+                                            ?>
+                                                <button class="profile-btn btn btn-dark btn-md" role="button" onmouseup="unfollow('<?php echo $pageUser->getUsername(); ?>', this)">Unfollow</button>
+                                            <?php
 
-                                    $isFollowing = false;
-
-                                    $sql = "SELECT isFollowing FROM user_connections WHERE firstUserID=" . $curUser->getId() . " AND secondUserID=" . $pageUser->getId();
-
-                                    $result = $conn->query($sql);
-
-                                    if($result->num_rows > 0) {
-                                        $status = $result->fetch_assoc()["isFollowing"];
-
-                                        $isFollowing = $status == 1;
-                                    }
-
-                                    if($isFollowing) {
-                                        ?>
-                                            <button class="profile-btn btn btn-dark btn-md" role="button" onmouseup="unfollow('<?php echo $pageUser->getUsername(); ?>', this)">Unfollow</button>
-                                        <?php
-
-                                    } else {
-                                        ?>
-                                            <button class="profile-btn btn btn-dark btn-md" role="button" onmouseup="follow('<?php echo $pageUser->getUsername(); ?>', this);">Follow</button>
-                                        <?php
+                                        } else {
+                                            ?>
+                                                <button class="profile-btn btn btn-dark btn-md" role="button" onmouseup="follow('<?php echo $pageUser->getUsername(); ?>', this);">Follow</button>
+                                            <?php
+                                        }
                                     }
                                 }
                             ?>
@@ -184,7 +199,128 @@ if(isset($_GET["user"])){
         </div>
     </div>
 
-    </body>
+
+    <div class="container posts-section">
+        <?php
+
+        if($isBlocked) {
+            ?>
+            <div class="alert alert-dark" role="alert">
+                You are blocked from viewing this profile.
+            </div>
+            <?php
+        } else {
+            // Get all recent posts.
+            // TODO: Add more posts to show as the users scrolls.
+            //      Load most recent, scrolls load further back into post history
+
+            if($logged_on) {
+                $sql = "SELECT posts.postID, replyToID, content, mediaFilename, posts.datetime as time, post_likes.likeID
+                        FROM posts
+                        LEFT JOIN post_likes
+                        ON post_likes.postID = posts.postID and post_likes.userID=" . $curUser->getId() . "
+                        WHERE posts.userID=" . $pageUser->getId() . "
+                        ORDER BY posts.datetime DESC
+                        ";
+            } else { // Same query, but likeID will always be null
+                $sql = "SELECT posts.postID, replyToID, content, mediaFilename, posts.datetime as time, post_likes.likeID
+                        FROM posts
+                        LEFT JOIN post_likes
+                        ON post_likes.likeID = -1
+                        WHERE posts.userID=" . $pageUser->getId() . "
+                        ORDER BY posts.datetime DESC
+                        ";
+            }
+
+            $results = $conn->query($sql);
+
+            if($results->num_rows > 0) {
+                while($row = $results->fetch_assoc()){
+                    ?>
+
+                    <div class="post">
+                        <div class="row">
+                            <div class="col-md-2 profile-image">
+                                <?php
+                                    if(is_null($pageUser->getDisplayImage()) || $pageUser->getDisplayImage()=="") {
+                                        ?> <img src="http://localhost/resource/images/profile/default.jpg" > <?php
+                                    } else {
+                                        ?> <img src="http://localhost/resource/images/profile/<?php echo $pageUser->getDisplayImage(); ?>" > <?php
+                                    }
+                                ?>
+                            </div>
+                            <div class="col-md-8 content">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row">
+                                            <h1><?php echo $pageUser->getName(); ?></h1>
+                                        </div>
+                                        <div class="row">
+                                            <p>@<?php echo $pageUser->getUsername(); ?></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <?php echo $row["content"]; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <?php
+
+                                if(is_null($row["likeID"])){
+                                    ?> <button class="btn btn-dark btn-block mt-auto" onclick="switchLike(<?php echo $row["postID"]; ?>, this)">Like</button> <?php
+                                } else {
+                                    ?> <button class="btn btn-dark btn-block mt-auto" onclick="switchLike(<?php echo $row["postID"]; ?>, this)">Unlike</button> <?php
+                                }
+
+                                ?>
+                                <button class="btn btn-dark btn-block">Reply</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php
+                }
+            } else {
+                ?>
+                <div class="alert alert-dark" role="alert">
+                    This user has no posts... Boring.
+                </div>
+                <?php
+            }
+        }
+        ?>
+        <!-- Post structure
+        <div class="post">
+            <div class="row">
+                <div class="col-md-2 profile-image">
+                    <img src="http://localhost/resource/images/profile/default.jpg">
+                </div>
+                <div class="col-md-8 content">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <h1>Cain</h1>
+                            </div>
+                            <div class="row">
+                                <p>@ashmoreinc</p>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        Lorem ipsum
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-dark btn-block mt-auto" >Like</button>
+                    <button class="btn btn-dark btn-block">Reply</button>
+                </div>
+            </div>
+        </div> -->
+    </div>
+</body>
 </html>
 
 <?php

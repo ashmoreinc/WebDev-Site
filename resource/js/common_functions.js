@@ -114,3 +114,28 @@ function unblock(username, btn, reloadOnSuccess=true){
         }
     })
 }
+
+function switchLike(postID, btn){
+    $.ajax({
+        url: window.location.origin + "/resource/ajax/switch_like.php",
+        type: 'POST',
+        data: {postID: postID},
+        dataType: "html",
+        success: function(data){
+            if(data === "success") {
+                if(btn.innerHTML === "Like") {
+                    btn.innerHTML = "Unlike";
+                } else if(btn.innerHTML === "Unlike") {
+                    btn.innerHTML = "Like";
+                } else {
+                    btn.innerHTML = "What did you do?";
+                }
+            } else {
+                alert("1Could not like. Try again or refresh the page.");
+            }
+        },
+        error: function (){
+            alert("2Could not like. Try again or refresh the page.");
+        }
+    });
+}

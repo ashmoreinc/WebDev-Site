@@ -79,14 +79,16 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
 
                 if($logged_on && !is_null($curUser)) {
                     $curUserID = $curUser->getId();
-                    $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id, user_connections.firstUserID, user_connections.secondUserID, user_connections.isFollowing, user_connections.isBlocked 
+                    $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id, user_connections.firstUserID, user_connections.secondUserID, user_connections.isFollowing, user_connections.isBlocked
                             FROM users
                             LEFT JOIN user_connections
-                            ON ((users.id=user_connections.firstUserID AND user_connections.secondUserID=$curUserID) OR (users.id=user_connections.secondUserID AND user_connections.firstUserID=$curUserID)) XOR 
-                               (users.id=user_connections.firstUserID OR users.id=user_connections.secondUserID)
-                            WHERE (username LIKE '%$query%' OR name LIKE '%$query%' OR bio LIKE '%$query%') 
-                                AND (isBlocked=0 OR isBlocked IS NULL)
-                                AND id!=" . $curUserID;
+                            ON ((users.id = user_connections.firstUserID AND user_connections.secondUserID=$curUserID) OR (users.id=$curUserID AND users.id=user_connections.secondUserID)) XOR
+                                    (users.id=user_connections.firstUserID XOR users.id=user_connections.secondUserID)
+                            WHERE (user_connections.isBlocked=0 OR user_connections.isBlocked IS NULL) 
+                                    AND users.id != $curUserID
+                                    AND (username LIKE '%$query%' 
+                                        OR name LIKE '%$query%' 
+                                        OR bio LIKE '%$query%')";
                 } else {
                     $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id
                             FROM users
@@ -101,6 +103,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
 
                 if($results->num_rows > 0) { // TODO Load limit, load more button and users tab
                     while($row = $results->fetch_assoc()){
+;
                         $output += 1;
                         ?>
 

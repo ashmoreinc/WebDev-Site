@@ -250,3 +250,57 @@ function updateBlock($user1ID, $user2ID, $state, $conn=null){
 
 }
 
+/**
+ * @param $userID
+ * @param $postID
+ * @param null $conn
+ * @throws dbConnNotCreatedException
+ * @throws InvalidArgumentException
+ */
+function switchLike($userID, $postID, $conn=null) {
+    if(gettype($userID) != "integer"){
+        throw new InvalidArgumentException("userID argument must be an integer.");
+    }
+
+    if(gettype($postID) != "integer"){
+        throw new InvalidArgumentException("postID argument must be an integer.");
+    }
+
+    $closeConn = false;
+    if(is_null($conn)) {
+        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+        $conn = getConn();
+        $closeConn = true;
+    }
+
+    if(is_null($conn)) {
+        throw new dbConnNotCreatedException("Could not create a database connection.");
+    }
+
+    // Check the user id and post id are valid
+    $sql = "SELECT id FROM users WHERE id=$userID";
+    $result = $conn->query($sql);
+    if($result->num_rows == 0) {
+        throw new InvalidArgumentException("User for that ID does not exist.");
+    }
+
+    $sql = "SELECT postID FROM posts WHERE postID=$postID";
+    $result = $conn->query($sql);
+    if($result->num_rows == 0) {
+        throw new InvalidArgumentException("Post for that ID does not exist.");
+    }
+
+    // Get the current like status for this user/post combination
+    $sql = "SELECT likeID from post_likes WHERE userID=$userID AND postID = $postID";
+    $result = $conn->query($sql);
+    if($result->num_rows > 0) {
+        $sql = "DELETE FROM post_likes WHERE userID=$userID and postID=$postID";
+    } else {
+        $sql = "INSERT INTO post_likes (userID, postID) VALUES ($userID, $postID)";
+    }
+
+    $conn->query($sql);
+
+    if($closeConn) $conn->close();
+
+}
