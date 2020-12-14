@@ -45,7 +45,7 @@ $isBlocking = false;
 $isFollowed = false;
 $isFollowing = false;
 
-if($logged_on) {
+if($logged_on && !is_null($pageUser)) {
     // Check the current users connections to the page user
     $sql = "SELECT isFollowing, isBlocked 
             FROM user_connections 
@@ -77,9 +77,6 @@ if($logged_on) {
     }
 }
 
-
-// TODO: Check the current page is not a private account
-// TODO: Check the current page has not blocked the logged in user
 ?>
 <html lang="en">
 <head>
@@ -121,7 +118,7 @@ if($logged_on) {
                             <div class="row">
                                 <div class="col">
                                     <h1 class="display-4"><?php echo $pageUser->getName(); ?></h1>
-                                    <p class="lead">@<?php echo $pageUser->getUsername() ?></p>
+                                    <p class="lead">@<?php echo $pageUser->getUsername() ?> <?php if($isFollowed) {echo "<span class=\"follows-back-msg\">Follows you</span>"; } ?></p>
                                 </div>
                                 <div class="col">
                                     <?php
@@ -149,7 +146,7 @@ if($logged_on) {
 
                                 </div>
                             </div>
-                            <hr class="my-4">
+                            <hr class="profile-divider my-4">
                             <p><?php
 
                                 $bio = $pageUser->getBio();
@@ -247,17 +244,26 @@ if($logged_on) {
                 You are blocked from viewing this profile.
             </div>
             <?php
-        } else {
+        } else if ($pageUser->getIsPrivate() && !$isFollowed) { // Check if the user is private and not following us
+            ?>
+            <div class="alert alert-dark" role="alert">
+                This users account is private. You will be able to see their posts once you both follow each other.
+            </div>
+            <?php
+        } else{
             // Get all recent posts.
             // TODO: Add more posts to show as the users scrolls.
             //      Load most recent, scrolls load further back into post history
-
             if($logged_on) {
                 $sql = "SELECT posts.postID, replyToID, content, mediaFilename, posts.datetime as time, post_likes.likeID, (
                             SELECT COUNT(*)
                             FROM post_likes
                             WHERE post_likes.postID=posts.postID
-                        ) as likes
+                        ) as likes, (
+                            SELECT COUNT(*)
+                            FROM posts as pst
+                            WHERE pst.replyToID=posts.postID
+                        ) as replies
                         FROM posts
                         LEFT JOIN post_likes
                         ON post_likes.postID = posts.postID and post_likes.userID=" . $curUser->getId() . "
@@ -269,7 +275,11 @@ if($logged_on) {
                             SELECT COUNT(*)
                             FROM post_likes
                             WHERE post_likes.postID=posts.postID
-                        ) as likes
+                        ) as likes, (
+                            SELECT COUNT(*)
+                            FROM posts as pst
+                            WHERE pst.replyToID=posts.postID
+                        ) as replies
                         FROM posts
                         LEFT JOIN post_likes
                         ON post_likes.likeID = -1
@@ -281,63 +291,12 @@ if($logged_on) {
             $results = $conn->query($sql);
 
             if($results->num_rows > 0) {
+                require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/Post.php";
                 while($row = $results->fetch_assoc()){
-                    ?>
+                    $post = new Post($row["postID"], $row["replyToID"], $row["content"], "", "", $pageUser,
+                        !is_null($row["likeID"]), $row["likes"], $row["replies"]);
 
-                    <div class="post">
-                        <div class="row">
-                            <div class="col-md-2 profile-image">
-                                <?php
-                                    if(is_null($pageUser->getDisplayImage()) || $pageUser->getDisplayImage()=="") {
-                                        ?> <img src="http://localhost/resource/images/profile/default.jpg" > <?php
-                                    } else {
-                                        ?> <img src="http://localhost/resource/images/profile/<?php echo $pageUser->getDisplayImage(); ?>" > <?php
-                                    }
-                                ?>
-                            </div>
-                            <div class="col-md-8 content">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="row">
-                                            <h1><?php echo $pageUser->getName(); ?></h1>
-                                        </div>
-                                        <div class="row">
-                                            <p>@<?php echo $pageUser->getUsername(); ?></p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <?php echo $row["content"]; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="row">
-                                    <div class="col-">
-                                        <?php echo $row["likes"]; ?>
-                                    </div>
-                                    <div class="col">
-                                        <?php
-
-                                        if(is_null($row["likeID"])){
-                                            ?> <button class="btn btn-dark btn-block mt-auto" onclick="switchLike(<?php echo $row["postID"]; ?>, this)">Like</button> <?php
-                                        } else {
-                                            ?> <button class="btn btn-dark btn-block mt-auto" onclick="switchLike(<?php echo $row["postID"]; ?>, this)">Unlike</button> <?php
-                                        }
-
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <button class="btn btn-dark btn-block">Reply</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <?php
+                    echo $post->getWidget();
                 }
             } else {
                 ?>

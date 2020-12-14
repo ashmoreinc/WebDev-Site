@@ -131,11 +131,11 @@ function switchLike(postID, btn){
                     btn.innerHTML = "What did you do?";
                 }
             } else {
-                alert("1Could not like. Try again or refresh the page.");
+                alert("Could not like. Try again or refresh the page.");
             }
         },
         error: function (){
-            alert("2Could not like. Try again or refresh the page.");
+            alert("Could not like. Try again or refresh the page.");
         }
     });
 }

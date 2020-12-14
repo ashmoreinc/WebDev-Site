@@ -246,6 +246,8 @@ function updateBlock($user1ID, $user2ID, $state, $conn=null){
     }
 
     $conn->query($sql);
+    // Unfollow for both accounts
+    $conn->query("UPDATE user_connections SET isFollowing=0 WHERE (firstUserID=$user1ID AND secondUserID=$user2ID) OR (firstUserID=$user2ID AND secondUserID=$user1ID)");
     if($closeConn) $conn->close();
 
 }

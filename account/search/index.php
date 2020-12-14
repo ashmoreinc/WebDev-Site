@@ -79,16 +79,17 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
 
                 if($logged_on && !is_null($curUser)) {
                     $curUserID = $curUser->getId();
-                    $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id, user_connections.firstUserID, user_connections.secondUserID, user_connections.isFollowing, user_connections.isBlocked
+                    $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename
                             FROM users
                             LEFT JOIN user_connections
-                            ON ((users.id = user_connections.firstUserID AND user_connections.secondUserID=$curUserID) OR (users.id=$curUserID AND users.id=user_connections.secondUserID)) XOR
-                                    (users.id=user_connections.firstUserID XOR users.id=user_connections.secondUserID)
-                            WHERE (user_connections.isBlocked=0 OR user_connections.isBlocked IS NULL) 
-                                    AND users.id != $curUserID
-                                    AND (username LIKE '%$query%' 
-                                        OR name LIKE '%$query%' 
-                                        OR bio LIKE '%$query%')";
+                            ON (users.id = user_connections.firstUserID AND user_connections.secondUserID=$curUserID) OR (users.id=$curUserID AND users.id=user_connections.secondUserID)
+                            WHERE users.id != $curUserID
+                                AND (username LIKE '%$query%' 
+                                    OR name LIKE '%$query%' 
+                                    OR bio LIKE '%$query%')
+                                AND ((user_connections.firstUserID=users.id AND user_connections.secondUserID=$curUserID AND user_connections.isBlocked!=1) OR 
+                                    NOT EXISTS(SELECT * FROM user_connections 
+                                                WHERE user_connections.firstUserID=users.id AND user_connections.secondUserID=8))";
                 } else {
                     $sql = "SELECT users.name, users.username, users.bio, users.displayImageFilename, users.id
                             FROM users
