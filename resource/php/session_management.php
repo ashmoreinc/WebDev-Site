@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/User.php";
+require_once "classes/User.php";
 
 function createSession($conn, $userID){
     endSession($conn);

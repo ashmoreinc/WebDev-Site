@@ -32,8 +32,8 @@ if(!isset($_POST["post-id"])) {
 }
 
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
+require_once "../../..//resource/php/dbconn.php";
+require_once "../../..//resource/php/common_functions.php";
 
 
 // Create connection
@@ -49,7 +49,7 @@ try {
 $id = steriliseInput($conn, $_POST["post-id"]);
 
 // Check for a valid logon session
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
+require_once "../../..//resource/php/session_management.php";
 
 $curUser = getLoggedInUser($conn);
 

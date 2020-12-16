@@ -56,9 +56,9 @@ if($whiteStripped == ""){
     returnWithError("No  content was provided for upload.");
 }
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
+require_once "../../../resource/php/common_functions.php";
+require_once "../../../resource/php/dbconn.php";
+require_once "../../../resource/php/classes/dbConnNotCreatedException.php";
 
 // Create connection
 try {
@@ -79,7 +79,7 @@ if(isset($_POST["repliesTo"])){
 }
 
 // Check for a valid logon session
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
+require_once "../../../resource/php/session_management.php";
 
 $curUser = getLoggedInUser($conn);
 

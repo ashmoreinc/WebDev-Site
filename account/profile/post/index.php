@@ -1,9 +1,9 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/Post.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/User.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
+require_once "../../../resource/php/dbconn.php";
+require_once "../../../resource/php/classes/Post.php";
+require_once "../../../resource/php/classes/User.php";
+require_once "../../../resource/php/common_functions.php";
+require_once "../../../resource/php/session_management.php";
 
 $curUser = null;
 $logged_on = false;
@@ -18,7 +18,7 @@ try {
 } catch (dbConnNotCreatedException $e) {
     $conn = null;
     header($_SERVER["SERVER_PROTOCOL"] . ' 500 Internal Server Error', true, 500);
-    require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/no_dbconn.php";
+    require_once "../../../resource/site-elements/no_dbconn.php";
     die();
 }
 
@@ -104,7 +104,7 @@ if(!is_null($post)) {
         echo "<title>Cannot view post.</title>";
     }
 
-    require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
+    require_once "../../../resource/site-elements/standardhead.php";
 
     ?>
 </head>
@@ -112,7 +112,7 @@ if(!is_null($post)) {
 
 <?php
 // Import the nav bar
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
+require_once "../../../resource/site-elements/navbar.php";
 
 ?>
 

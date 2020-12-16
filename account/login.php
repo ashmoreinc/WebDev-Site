@@ -13,7 +13,7 @@ function returnWithError($errorName){
 }
 
 // Get the connection
-require_once $_SERVER["DOCUMENT_ROOT"] . '/resource/php/dbconn.php';
+require_once '../resource/php/dbconn.php';
 
 
 try {

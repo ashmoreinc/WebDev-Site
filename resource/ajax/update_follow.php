@@ -5,8 +5,8 @@ if(!isset($_POST["username"])){
     die();
 }
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+require_once "../php/session_management.php";
+require_once "../php/dbconn.php";
 
 // Create a database connection
 try {
@@ -28,7 +28,7 @@ if(!isLoggedIn($conn)){
 
 $curUser = getLoggedInUser($conn);
 // Sanitise the input
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
+require_once "../resource/php/common_functions.php";
 $username = steriliseInput($conn, $_POST["username"]);
 
 // Get the id of the other user
@@ -44,8 +44,8 @@ if($result->num_rows <= 0) {
 $otherUserID = $result->fetch_assoc()["id"];
 
 // Run the follow update
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/couldNotFollowException.php";
+require_once "../resource/php/classes/dbConnNotCreatedException.php";
+require_once "../resource/php/classes/couldNotFollowException.php";
 
 
 if(isset($_POST["action"])){

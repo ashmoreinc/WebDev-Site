@@ -6,7 +6,7 @@ if(!isset($_POST["username"])){
 }
 
 // Get connection
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+require_once "../php/dbconn.php";
 
 try {
     $conn = getConn();
@@ -16,7 +16,7 @@ try {
 }
 
 // Check the username exists or not
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
+require_once "../php/common_functions.php";
 
 $username = steriliseInput($conn, $_POST["username"]);
 

@@ -1,7 +1,7 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/couldNotFollowException.php";
+require_once "classes/dbConnNotCreatedException.php";
+require_once "classes/couldNotFollowException.php";
 /**
  * Sterilise a string from possible xss attacks
  * @param $input
@@ -69,7 +69,7 @@ function updateFollow($user1ID, $user2ID, $state, $conn=null){
     }
 
     if(is_null($conn)) {
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+        require_once "/dbconn.php";
         $conn = getConn();
         $closeConn = true;
     }
@@ -153,7 +153,7 @@ function switchFollow($user1ID, $user2ID, $conn=null){
     }
 
     if(is_null($conn)) {
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+        require_once "dbconn.php";
         $conn = getConn();
     }
 
@@ -207,7 +207,7 @@ function updateBlock($user1ID, $user2ID, $state, $conn=null){
     }
 
     if(is_null($conn)) {
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+        require_once "dbconn.php";
         $conn = getConn();
         $closeConn = true;
     }
@@ -270,7 +270,7 @@ function switchLike($userID, $postID, $conn=null) {
 
     $closeConn = false;
     if(is_null($conn)) {
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+        require_once "dbconn.php";
         $conn = getConn();
         $closeConn = true;
     }

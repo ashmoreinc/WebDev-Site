@@ -1,10 +1,10 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/Post.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
+require_once "../php/dbconn.php";
+require_once "../php/session_management.php";
+require_once "../php/common_functions.php";
+require_once "../php/classes/Post.php";
+require_once "../php/classes/dbConnNotCreatedException.php";
 
 
 try {

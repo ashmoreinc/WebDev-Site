@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+require_once "../../resource/php/session_management.php";
+require_once "../../resource/php/dbconn.php";
 
 // Get the currently logged on user if any
 $curUser = null;
@@ -89,7 +89,7 @@ if($logged_on && !is_null($pageUser)) {
         }
 
         // Import the header from a central location
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
+        require_once "../../resource/site-elements/standardhead.php";
     ?>
 
     <script>
@@ -127,7 +127,7 @@ if($logged_on && !is_null($pageUser)) {
 <body>
     <?php
         // Import the navbar
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
+        require_once "../../resource/site-elements/navbar.php";
     ?>
 
     <div class="profile-banner jumbotron">
@@ -272,7 +272,7 @@ if($logged_on && !is_null($pageUser)) {
                     ?>
                     <div class="alert alert-danger" role="alert">
                         <?php
-                        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
+                        require_once "../../resource/php/common_functions.php";
                         echo steriliseInput($conn, $_GET["post-comp-error"]); ?>
                     </div>
                     <?php
@@ -351,7 +351,7 @@ if($logged_on && !is_null($pageUser)) {
             $results = $conn->query($sql);
 
             if($results->num_rows > 0) {
-                require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/Post.php";
+                require_once "../../resource/php/classes/Post.php";
                 while($row = $results->fetch_assoc()){
                     $post = new Post($row["postID"], $row["replyToID"], $row["content"], "", $row["time"], $pageUser,
                         !is_null($row["likeID"]), $row["likes"], $row["replies"]);

@@ -1,8 +1,8 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
+require_once "resource/php/dbconn.php";
+require_once "resource/php/session_management.php";
+require_once "resource/php/classes/dbConnNotCreatedException.php";
 $curUser = null;
 $logged_on = false;
 
@@ -15,7 +15,7 @@ try {
 } catch (dbConnNotCreatedException $e) {
     $conn = null;
     header($_SERVER["SERVER_PROTOCOL"] . ' 500 Internal Server Error', true, 500);
-    require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/no_dbconn.php";
+    require_once "/resource/site-elements/no_dbconn.php";
     die();
 }
 
@@ -26,13 +26,13 @@ try {
         <title>Exclusive</title>
 
         <?php // Import the header from a central location
-            require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
+            require_once "resource/site-elements/standardhead.php";
         ?>
     </head>
 <body <?php if(!$logged_on) { echo "class='no-top-pad'"; }?>>
     <?php
 
-    require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
+    require_once "resource/site-elements/navbar.php";
 
     ?>
 
@@ -71,8 +71,8 @@ try {
                 $results = $conn->query($sql);
 
                 if($results->num_rows > 0) {
-                    require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/User.php";
-                    require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/Post.php";
+                    require_once "resource/php/classes/User.php";
+                    require_once "resource/php/classes/Post.php";
                     while($row = $results->fetch_assoc()){
 
                         $user = new User($row["id"], $row["id"]==$curUser->getId());

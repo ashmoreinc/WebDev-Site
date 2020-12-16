@@ -1,6 +1,8 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+require_once "../dbconn.php";
+require_once "dbConnNotCreatedException.php";
+require_once "userNotFoundException.php";
 
 class User
 {

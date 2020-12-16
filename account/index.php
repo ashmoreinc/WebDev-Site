@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+require_once "../resource/php/session_management.php";
+require_once "../resource/php/dbconn.php";
 
 // Redirect to the site home page if already logged in.
 try {
@@ -23,7 +23,7 @@ if (!is_null($conn)){
         <title>Login/Sign-up</title>
 
         <?php // Import the header from a central location
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
+        require_once "../resource/site-elements/standardhead.php";
         ?>
         <script src="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/js/common_functions.js" ?>"></script>
         <script>
@@ -87,7 +87,7 @@ if (!is_null($conn)){
     <body>
         <?php
 
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
+        require_once "../resource/site-elements/navbar.php";
 
         ?>
 

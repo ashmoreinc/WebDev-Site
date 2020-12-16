@@ -39,9 +39,9 @@ class Post
      * @return Post|null
      */
     public static function getFromID($postID): ?Post {
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
-        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
+        require_once "../dbconn.php";
+        require_once "dbConnNotCreatedException.php";
+        require_once "../session_management.php";
 
         try {
             $conn = getConn();
@@ -95,12 +95,12 @@ class Post
 
     public function getWidget($showInteract=true): ?string{
         if($showInteract){
-            $fileLocation = $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/postFormat.html";
+            $fileLocation = "../../site-elements/postFormat.html";
 
             // Now check if we own the post
-            require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-            require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
-            require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
+            require_once "../dbconn.php";
+            require_once "dbConnNotCreatedException.php";
+            require_once "../session_management.php";
 
             try {
                 $conn = getConn();
@@ -112,12 +112,12 @@ class Post
 
             if(!is_null($curUser)){
                 if($this->user->getId() == $curUser->getId()) {
-                    $fileLocation = $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/postFormatOwned.html";
+                    $fileLocation = "../../site-elements/postFormatOwned.html";
                 }
             }
 
         } else {
-            $fileLocation = $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/postFormatNoInteract.html";
+            $fileLocation = "../../site-elements/postFormatNoInteract.html";
         }
 
         $widgetFile = fopen($fileLocation, "r");

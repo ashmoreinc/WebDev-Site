@@ -5,8 +5,8 @@ if(!isset($_POST["postID"])) {
 }
 
 // Create a db connection
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
+require_once "../php/dbconn.php";
+require_once "../php/classes/dbConnNotCreatedException.php";
 
 try {
     $conn = getConn();
@@ -21,11 +21,11 @@ if(is_null($conn)) {
 }
 
 // Sanitise the user input
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
+require_once "../php/common_functions.php";
 $postID = steriliseInput($conn, $_POST["postID"]);
 
 // Check for a login session
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
+require_once "../php/session_management.php";
 
 $curUser = getLoggedInUser($conn);
 

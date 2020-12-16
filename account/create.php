@@ -13,7 +13,7 @@ function returnWithError($errorName){
 }
 
 // Get the connection
-require_once $_SERVER["DOCUMENT_ROOT"] . '/resource/php/dbconn.php';
+require_once "../resource/php/dbconn.php";
 try {
     $conn = getConn();
 } catch (dbConnNotCreatedException $e) {
@@ -52,7 +52,7 @@ if(isset($_POST["passwordconf"])){
 }
 
 // Clean up the user input to prevent any SQL injection attempts or XSS
-require_once $_SERVER["DOCUMENT_ROOT"] . '/resource/php/common_functions.php';
+require_once '../resource/php/common_functions.php';
 
 $name = steriliseInput($conn, $_POST["name"]);
 $user = steriliseInput($conn, $_POST["username"]);

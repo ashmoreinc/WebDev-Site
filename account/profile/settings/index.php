@@ -1,7 +1,7 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/common_functions.php";
+require_once "../../../resource/php/session_management.php";
+require_once "../../../resource/php/dbconn.php";
+require_once "../../../resource/php/common_functions.php";
 
 // Get the currently logged on user if any
 $curUser = null;
@@ -109,7 +109,7 @@ if($logged_on){
             // Delete the old image
             $imageName = $curUser->getDisplayImage();
 
-            unlink($_SERVER["DOCUMENT_ROOT"] . "/resource/images/profile/" . $imageName);
+            unlink("../../../resource/images/profile/" . $imageName);
 
         } else {
             // Check there is a file for upload
@@ -149,7 +149,7 @@ if($logged_on){
                 $newFilename .= "." . pathinfo($_FILES["profile-image"]["name"], PATHINFO_EXTENSION);
 
                 // Move the temp file to the new location
-                $filepath = $_SERVER["DOCUMENT_ROOT"] . "/resource/images/profile/" . $newFilename;
+                $filepath = "../../../resource/images/profile/" . $newFilename;
 
                 if (move_uploaded_file($_FILES['profile-image']['tmp_name'], $filepath)) {
                     // Now update the database.
@@ -276,7 +276,7 @@ if ($logged_on){
     <title>Settings</title>
 
     <?php
-    require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
+    require_once "../../../resource/site-elements/standardhead.php";
     ?>
 
     <script>
@@ -319,7 +319,7 @@ if ($logged_on){
 <body>
     <?php
     // Import the navbar
-    require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
+    require_once "../../../resource/site-elements/navbar.php";
     ?>
 
     <div class="jumbotron">
