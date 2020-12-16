@@ -2,7 +2,6 @@
 require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
 require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
 
-// TODO: Consider asking the user if they want to log out
 // Redirect to the site home page if already logged in.
 try {
     $conn = getConn();

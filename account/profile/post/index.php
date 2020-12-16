@@ -48,29 +48,35 @@ if(!is_null($post)) {
         $post = null;
     }
 
+
+
     if(!is_null($post)) {
         if ($logged_on) {
-            // Check block and follow status of post author to current user
-            $sql = "SELECT isBlocked, isFollowing
-                    FROM user_connections
-                    WHERE firstUserID=" . $post->getUser()->getId() . " AND secondUserID=" . $curUser->getId();
+            if($post->getUser()->getIsCurrentUser()) {
+                $canView = true;
+            } else {
+                // Check block and follow status of post author to current user
+                $sql = "SELECT isBlocked, isFollowing
+                        FROM user_connections
+                        WHERE firstUserID=" . $post->getUser()->getId() . " AND secondUserID=" . $curUser->getId();
 
-            $isFollowing = false;
-            $isBlocked = false;
+                $isFollowing = false;
+                $isBlocked = false;
 
-            $result = $conn->query($sql);
+                $result = $conn->query($sql);
 
-            if($result->num_rows > 0) {
-                $row = $result->fetch_assoc();
+                if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
 
-                $isFollowing = $row["isFollowing"] == 1;
-                $isBlocked = $row["isBlocked"] == 1;
-            }
+                    $isFollowing = $row["isFollowing"] == 1;
+                    $isBlocked = $row["isBlocked"] == 1;
+                }
 
-            // Now choose whether to show the post
-            if(!$isBlocked) {
-                if(!$isPrivate || $isFollowing) {
-                    $canView = true;
+                // Now choose whether to show the post
+                if (!$isBlocked) {
+                    if (!$isPrivate || $isFollowing) {
+                        $canView = true;
+                    }
                 }
             }
         } else {

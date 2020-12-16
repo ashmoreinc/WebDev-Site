@@ -1,6 +1,6 @@
 // Import jQuery
 var script = document.createElement('script');
-script.src = 'https://code.jquery.com/jquery-3.4.1.min.js'; // TODO: Maybe switch to the local file.
+script.src = 'https://code.jquery.com/jquery-3.4.1.min.js';
 script.type = 'text/javascript';
 document.getElementsByTagName('head')[0].appendChild(script);
 

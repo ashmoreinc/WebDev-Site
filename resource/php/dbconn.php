@@ -1,9 +1,8 @@
 <?php
 
-// TODO Purge all data from this file for security, move it to an external file
-
-/**a
+/**Creates and returns a database connection
  * @throws dbConnNotCreatedException
+ * @see mysqli
  */
 function getConn() {
     error_reporting(0);

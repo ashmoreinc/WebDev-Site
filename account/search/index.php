@@ -102,7 +102,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
 
                 $output = 0;
 
-                if($results->num_rows > 0) { // TODO Load limit, load more button and users tab
+                if($results->num_rows > 0) {
                     while($row = $results->fetch_assoc()){
 ;
                         $output += 1;

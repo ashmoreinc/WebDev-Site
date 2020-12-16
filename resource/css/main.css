@@ -215,6 +215,54 @@ body.no-top-pad {
 .profile-banner .profile-info hr.profile-divider {
     margin-top: 0 !important;
 }
+ /*     Follow/followers        */
+.section-nav {
+    margin-bottom: 15px;
+}
+
+.head-container {
+    background-color: #eeeeee;
+    padding: 25px;
+    margin-bottom: 15px;
+
+    border-bottom: 1px solid #d2d2d2;
+    border-right: 1px solid #d2d2d2;
+    border-radius: 5px;
+}
+
+.follow-section.hidden {
+    display: none;
+}
+
+.follow-section .user-result {
+    background-color: #eeeeee;
+
+    padding: 15px;
+    margin-bottom: 15px;
+
+
+    border-bottom: 1px solid #d2d2d2;
+    border-right: 1px solid #d2d2d2;
+    border-radius: 5px;
+}
+
+.follow-section .user-result .profile-image img{
+    max-height: 100%;
+    max-width: 100%;
+
+    border-radius: 100%;
+    border: 1px solid #c6c6c6;
+
+    object-fit: contain;
+
+    padding: 5%;
+}
+
+.follow-section .user-result .content .user-info{
+    display: block;
+    padding: 10px 10px 0;
+    vertical-align: middle;
+}
 
 /*  Settings page */
 
@@ -227,6 +275,10 @@ body.no-top-pad {
     border-bottom: 1px solid #d2d2d2;
     border-right: 1px solid #d2d2d2;
     border-radius: 5px;
+}
+
+.settings .profile-settings .hidden {
+    display: none;
 }
 
 .settings .settings-section.profile-settings .profile-image-section img{
@@ -280,6 +332,7 @@ body.no-top-pad {
     padding: 10px 10px 0;
     vertical-align: middle;
 }
+
 .search-results .users-results .result .content .user-bio {
     padding: 0 10px 10px;
 }

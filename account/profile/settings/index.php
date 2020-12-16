@@ -24,7 +24,7 @@ $updateMessage = null;
 
 if($logged_on){
     // Profile
-    if(isset($_POST["profile-settings"])) { // TODO: Check if the username is taken
+    if(isset($_POST["profile-settings"])) {
         $name = steriliseInput($conn, $_POST["name"]);
         $username = steriliseInput($conn, $_POST["username"]);
         $bio = steriliseInput($conn, $_POST["bio"]);
@@ -51,6 +51,17 @@ if($logged_on){
         if(!is_null($updateError)) {
             if (!$updateName && !$updateUser && $updateBio) {
                 $updateError = "No changes found.";
+            }
+        }
+
+        if(!is_null($updateError)) {
+            // Check if the username is taken
+            $sql = "SELECT * FROM user WHERE username='$username'";
+
+            $result = $conn->query($sql);
+
+            if($result->num_rows > 0){
+                $updateError = "Username already taken.";
             }
         }
 
@@ -85,8 +96,6 @@ if($logged_on){
         }
     }
     if(isset($_POST["profile-image-settings"])) { // Use is trying to upload a picture
-        // TODO: Image resizing?
-        // TODO: Delete old image
         if($_POST["submit"] == "delete") {
             // Remove the image name in the users table
             $sql = "UPDATE users SET displayImageFilename='' WHERE id=" . $curUser->getId();
@@ -275,6 +284,35 @@ if ($logged_on){
         window.addEventListener("hashchange", function () {
             window.scrollTo(window.scrollX, window.scrollY - 75);
         });
+
+
+        function check_username(){
+            let un_lbl = document.getElementById("username-taken-lbl");
+            let un_inp = document.getElementById("usernameInput");
+            username_taken(un_inp.value, "<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/ajax/username_exists.php" ?>", function(data) {
+                switch (data) {
+                    case "true":
+                        if(un_lbl.classList.contains("hidden")) {
+                            un_lbl.classList.remove("hidden");
+                        }
+                        break;
+                    case "false":
+                        if(!un_lbl.classList.contains("hidden")){
+                            un_lbl.classList.add("hidden");
+                        }
+                        break;
+                    case "username not set":
+                    case "could not check username":
+                        // here we can handle any issues needed. We don't need to in this case as its only a visual aide
+                        break;
+                    default:
+                        // Add the hidden class so that user may try the username if they want it.
+                        // If the username is in-fact taken and we just haven't handled the error, it will be corrected by the sign-up action
+                        if(un_lbl.classList.contains("hidden")) un_lbl.classList.add("hidden");
+                        break;
+                }
+            });
+        }
     </script>
 </head>
 
@@ -345,8 +383,8 @@ if ($logged_on){
 
                     <div class="form-group">
                         <label for="usernameInput">Username</label>
-                        <input type="text" class="form-control" id="usernameInput" aria-describedby="usernameHelp"  name="username" value="<?php echo $curUser->getUsername(); ?>" required>
-                        <?php // TODO: Implement username exists check client side alert :: Same as sign-up page ?>
+                        <input type="text" class="form-control" id="usernameInput" aria-describedby="usernameHelp"  name="username" value="<?php echo $curUser->getUsername(); ?>"  onkeyup="check_username()" required>
+                        <small id="username-taken-lbl" class="form-text text-danger hidden">Username taken.</small>
                     </div>
 
                     <div class="form-group">

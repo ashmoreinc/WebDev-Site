@@ -40,10 +40,10 @@ if(isset($_GET["user"])){
 }
 
 // Check the loggedin users relationships, if any, to this user
-$isBlocked = false;
-$isBlocking = false;
-$isFollowed = false;
-$isFollowing = false;
+$isBlocked = false; // curuser -> pageuser
+$isBlocking = false; // pageuser -> cursuer
+$isFollowed = false; // pageuser -> curuser
+$isFollowing = false; // curuser -> pageuser
 
 if($logged_on && !is_null($pageUser)) {
     // Check the current users connections to the page user
@@ -91,6 +91,38 @@ if($logged_on && !is_null($pageUser)) {
         // Import the header from a central location
         require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
     ?>
+
+    <script>
+        function showFollowers(){
+            let posts = document.getElementById("posts-section");
+            let followers = document.getElementById("followers-section");
+            let following = document.getElementById("following-section");
+
+            posts.classList.add("hidden");
+            followers.classList.remove("hidden");
+            following.classList.add("hidden");
+        }
+
+        function showFollowing(){
+            let posts = document.getElementById("posts-section");
+            let followers = document.getElementById("followers-section");
+            let following = document.getElementById("following-section");
+
+            posts.classList.add("hidden");
+            followers.classList.add("hidden");
+            following.classList.remove("hidden");
+        }
+
+        function showPosts(){
+            let posts = document.getElementById("posts-section");
+            let followers = document.getElementById("followers-section");
+            let following = document.getElementById("following-section");
+
+            posts.classList.remove("hidden");
+            followers.classList.add("hidden");
+            following.classList.add("hidden");
+        }
+    </script>
 </head>
 <body>
     <?php
@@ -196,8 +228,21 @@ if($logged_on && !is_null($pageUser)) {
         </div>
     </div>
 
+    <div class="container section-nav">
+        <div class="row">
+            <div class="col- ml-5 px-1">
+                <button id="post-nav-btn" class="btn btn-secondary" onclick="showPosts()">Posts</button>
+            </div>
+            <div id="follows-nav-btn" class="col- px-1">
+                <button class="btn btn-secondary" onclick="showFollowing()">Follows</button>
+            </div>
+            <div id="followers-nav-btn" class="col- px-1">
+                <button class="btn btn-secondary" onclick="showFollowers()">Followers</button>
+            </div>
+        </div>
+    </div>
 
-    <div class="container posts-section">
+    <div id="posts-section" class="container posts-section follow-section">
         <?php
         // Check for post delete errors and success. Errors can show when no account is loaded. So we dont need to check
         //  For an account
@@ -255,13 +300,13 @@ if($logged_on && !is_null($pageUser)) {
             <?php
         }
 
-        if($isBlocked) {
+        if(!$pageUser->getIsCurrentUser() && $isBlocked) {
             ?>
             <div class="alert alert-dark" role="alert">
                 You are blocked from viewing this profile.
             </div>
             <?php
-        } else if ($pageUser->getIsPrivate() && !$isFollowed) { // Check if the user is private and not following us
+        } else if (!$pageUser->getIsCurrentUser() && $pageUser->getIsPrivate() && !$isFollowed) { // Check if the user is private and not following us
             ?>
             <div class="alert alert-dark" role="alert">
                 This users account is private. You will be able to see their posts once you both follow each other.
@@ -269,8 +314,6 @@ if($logged_on && !is_null($pageUser)) {
             <?php
         } else{
             // Get all recent posts.
-            // TODO: Add more posts to show as the users scrolls.
-            //      Load most recent, scrolls load further back into post history
             if($logged_on) {
                 $sql = "SELECT posts.postID, replyToID, content, mediaFilename, posts.datetime as time, post_likes.likeID, (
                             SELECT COUNT(*)
@@ -323,6 +366,144 @@ if($logged_on && !is_null($pageUser)) {
                 <?php
             }
         }
+        ?>
+    </div>
+    <div id="following-section" class="container hidden followers-section follow-section">
+        <?php
+        if($pageUser->getIsCurrentUser() || ($pageUser->getShowFollowing() && !$isBlocked && (!$pageUser->getIsPrivate() || $isFollowed))){
+            ?>
+
+            <div class="head-container">
+                <h3><?php echo $pageUser->getName(); ?> follows</h3>
+            </div>
+
+            <?php
+
+            $sql = "SELECT users.name, users.username, users.displayImageFilename, users.bio
+                    FROM users
+                    LEFT JOIN user_connections
+                    ON user_connections.secondUserID=users.id
+                    WHERE user_connections.isFollowing=1
+                        AND user_connections.firstUserID=" . $pageUser->getId();
+
+            $result = $conn->query($sql);
+
+            if($result->num_rows > 0) {
+                while($row=$result->fetch_assoc()){
+                    ?>
+
+                    <div class="user-result">
+                        <div class="row">
+                            <div class="profile-image col-md-2 d-flex justify-content-center">
+                                <a href="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/account/profile/?user=" . $row["username"] ?>">
+                                    <img class="mr-auto ml-auto" src="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/images/profile/" . ((is_null($row["displayImageFilename"]) || $row["displayImageFilename"] == "") ? "default.jpg" : $row["displayImageFilename"]); ?>">
+                                </a>
+                            </div>
+                            <div class="content col-md-8">
+                                <div class="user-info row">
+                                    <h1><?php echo $row["name"] ?></h1>
+                                    <h5><a href="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/account/profile/?user=" . $row["username"] ?>">@<?php echo $row["username"] ?></a></h5>
+                                </div>
+                                <hr>
+                                <div class="user-bio row">
+                                    <p><?php
+
+                                        if(is_null($row["bio"])){
+                                            echo "This user does not have a bio.";
+                                        } else if($row["bio"] == "") {
+                                            echo "This user does not have a bio.";
+                                        } else {
+                                            echo $row["bio"];
+                                        }
+
+                                        ?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php
+                }
+            } else {
+                ?>
+
+                <div class="alert alert-light" role="alert">
+                    Nobody. How boring!
+                </div>
+                <?php
+            }
+
+        }
+
+        ?>
+    </div>
+    <div id="followers-section" class="container hidden following-section follow-section">
+        <?php
+        if($pageUser->getIsCurrentUser() || ($pageUser->getShowFollowers() && !$isBlocking && (!$pageUser->getIsPrivate() || $isFollowed))){
+            ?>
+
+            <div class="head-container">
+                <h3><?php echo $pageUser->getName(); ?> is followed by</h3>
+            </div>
+
+            <?php
+
+            $sql = "SELECT users.name, users.username, users.displayImageFilename, users.bio
+                    FROM users
+                    LEFT JOIN user_connections
+                    ON user_connections.firstUserID=users.id
+                    WHERE user_connections.isFollowing=1
+                        AND user_connections.secondUserID=" . $pageUser->getId();
+
+            $result = $conn->query($sql);
+
+            if($result->num_rows > 0) {
+                while($row=$result->fetch_assoc()){
+                    ?>
+
+                    <div class="user-result">
+                        <div class="row">
+                            <div class="profile-image col-md-2 d-flex justify-content-center">
+                                <a href="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/account/profile/?user=" . $row["username"] ?>">
+                                    <img class="mr-auto ml-auto" src="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/images/profile/" . ((is_null($row["displayImageFilename"]) || $row["displayImageFilename"] == "") ? "default.jpg" : $row["displayImageFilename"]); ?>">
+                                </a>
+                            </div>
+                            <div class="content col-md-8">
+                                <div class="user-info row">
+                                    <h1><?php echo $row["name"] ?></h1>
+                                    <h5><a href="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/account/profile/?user=" . $row["username"] ?>">@<?php echo $row["username"] ?></a></h5>
+                                </div>
+                                <hr>
+                                <div class="user-bio row">
+                                    <p><?php
+
+                                        if(is_null($row["bio"])){
+                                            echo "This user does not have a bio.";
+                                        } else if($row["bio"] == "") {
+                                            echo "This user does not have a bio.";
+                                        } else {
+                                            echo $row["bio"];
+                                        }
+
+                                        ?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php
+                }
+            } else {
+                ?>
+
+                <div class="alert alert-light" role="alert">
+                    Nobody. How boring!
+                </div>
+                <?php
+            }
+
+        }
+
         ?>
     </div>
 </body>
