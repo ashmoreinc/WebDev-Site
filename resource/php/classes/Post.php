@@ -37,14 +37,19 @@ class Post
      * Returns a Post class from a PostID input. Returns NULL if a post cannot be found.
      * @param $postID
      * @return Post|null
-     * @throws dbConnNotCreatedException
      */
     public static function getFromID($postID): ?Post {
         require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+        require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
         require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
 
-        $conn = getConn();
+        try {
+            $conn = getConn();
+        } catch (dbConnNotCreatedException $e) {
+            return null;
+        }
         $curUser = getLoggedInUser($conn);
+
 
         // Get the post
         $postResult = $conn->query("SELECT userID, replyToID, content, mediaFilename, datetime, 
@@ -74,7 +79,11 @@ class Post
             $row = $postResult->fetch_assoc();
 
             // Check if is current user
-            $isCurrentUser = $row["userID"] == $curUser->getId();
+            if(!is_null($curUser)) {
+                $isCurrentUser = $row["userID"] == $curUser->getId();
+            } else {
+                $isCurrentUser = false;
+            }
             $user = new User($row["userID"], $isCurrentUser);
 
             return new Post($postID, $row["replyToID"], $row["content"], $row["mediaFileName"],
@@ -88,16 +97,24 @@ class Post
      * Returns a HTML widget for a post.
      * @return string|null
      */
-    public function getWidget(): ?string{
+    public function getWidgetOld($showInteract=true): ?string{
         if(is_null($this->user) || is_null($this->likes) || is_null($this->replies)){
             return null;
         }
 
-        $widget = "<div class=\"post\">
+        if($showInteract) {
+            $widget = "<div class=\"post\">
                             <div class=\"row\">
                                 <div class=\"col-lg-10 content\">
                                     <div class=\"row user-info\">
                                         <div class=\"img\">";
+        } else {
+            $widget = "<div class=\"post\">
+                            <div class=\"row\">
+                                <div class=\"col-lg-12 content\">
+                                    <div class=\"row user-info\">
+                                        <div class=\"img\">";
+        }
 
         if(is_null($this->user->getDisplayImage()) || $this->user->getDisplayImage() == ""){
             $widget .= "<img src=\"http://localhost/resource/images/profile/default.jpg\">";
@@ -117,7 +134,7 @@ class Post
                                     <div class=\"row post-content\">
                                         " . $this->content . "
                                     </div>
-                                </div>
+                                </div>" . "
                                 <div class=\"col-lg interact-splitter\">
                                 </div>
                                 <div class=\"col-lg-2 interact\">
@@ -150,6 +167,32 @@ class Post
                         </div>";
 
         return $widget;
+    }
+
+    public function getWidget($showInteract=true): ?string{
+        if($showInteract){
+            $fileLocation = $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/postFormat.html";
+        } else {
+            $fileLocation = $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/postFormatNoInteract.html";
+        }
+
+        $widgetFile = fopen($fileLocation, "r");
+        $html = fread($widgetFile, filesize($fileLocation));
+
+        // Replace all variables
+        $html = str_replace("{SERVER_NAME}", $_SERVER["SERVER_NAME"], $html);
+        $html = str_replace("{NAME}", $this->user->getName(), $html);
+        $html = str_replace("{USERNAME}", $this->user->getUsername(), $html);
+        $html = str_replace("{IMAGE_FILE}", ($this->user->getDisplayImage() == "" or
+            is_null($this->user->getDisplayImage())) ? "default.jpg" : $this->user->getDisplayImage(), $html);
+        $html = str_replace("{CONTENT}", $this->content, $html);
+        $html = str_replace("{POST_ID}", $this->postID, $html);
+        $html = str_replace("{LIKE_COUNT}", $this->likes, $html);
+        $html = str_replace("{REPLY_COUNT}", $this->replies, $html);
+        $html = str_replace("{LIKE_BTN_TEXT}", $this->liked ? "Unlike" : "Like", $html);
+
+        return $html;
+
     }
 
     // Getters

@@ -139,3 +139,22 @@ function switchLike(postID, btn){
         }
     });
 }
+
+function bringUpReply(postID){
+    $.ajax({
+        url: window.location.origin + "/resource/ajax/reply_overlay.php",
+        type: 'POST',
+        data: {pid:postID},
+        dataType: "html",
+        success: function(data) {
+            let body = $(document.body);
+            var txt3 = document.createElement("div");
+            txt3.innerHTML = data;
+
+            body.prepend(data);
+        },
+        error: function(data) {
+            alert("errorr: " + data);
+        }
+    })
+}

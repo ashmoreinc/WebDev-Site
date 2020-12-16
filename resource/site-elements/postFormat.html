@@ -1,0 +1,44 @@
+<div class="post">
+    <div class="row">
+        <div class="col-lg-10 content">
+            <div class="row user-info">
+                <div class="img">
+                    <a href="http://{SERVER_NAME}/account/profile/?user={USERNAME}">
+                        <img src="http://{SERVER_NAME}/resource/images/profile/{IMAGE_FILE}">
+                    </a>
+                </div>
+                <div class="name">
+                    <h3>{NAME}</h3>
+                </div>
+                <div class="username">
+                    <a href="http://{SERVER_NAME}/account/profile/?user={USERNAME}">@{USERNAME}</a>
+                </div>
+            </div>
+            <hr>
+            <a class="post-link" href="http://{SERVER_NAME}/account/profile/post/?pid={POST_ID}">
+                <div class="row post-content">
+                    {CONTENT}
+                </div>
+            </a>
+        </div>
+        <div class="col-lg interact-splitter">
+        </div>
+        <div class="col-lg-2 interact">
+            <div class="row">
+                <div class="col-sm-4 like-count">
+                    {LIKE_COUNT}
+                </div>
+                <div class="col-sm-8 like-button"><button class="btn btn-dark btn-block mt-auto" onclick="switchLike({POST_ID}, this)">{LIKE_BTN_TEXT}</button></div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-4 reply-count">
+                    {REPLY_COUNT}
+                </div>
+                <div class="col-sm-8 like-button">
+                    <button class="btn btn-dark btn-block" onclick="bringUpReply({POST_ID})">Reply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

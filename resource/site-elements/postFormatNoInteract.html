@@ -1,0 +1,25 @@
+<div class="post">
+    <div class="row">
+        <div class="col-lg-12 content">
+            <div class="row user-info">
+                <div class="img">
+                    <a href="http://{SERVER_NAME}/account/profile/?user={USERNAME}">
+                        <img src="http://{SERVER_NAME}/resource/images/profile/{IMAGE_FILE}">
+                    </a>
+                </div>
+                <div class="name">
+                    <h3>{NAME}</h3>
+                </div>
+                <div class="username">
+                    <a href="http://{SERVER_NAME}/account/profile/?user={USERNAME}">@{USERNAME}</a>
+                </div>
+            </div>
+            <hr>
+            <a class="post-link" href="http://{SERVER_NAME}/account/profile/post/?pid={POST_ID}">
+                <div class="row post-content">
+                    {CONTENT}
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

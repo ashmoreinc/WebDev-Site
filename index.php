@@ -9,6 +9,9 @@ $logged_on = false;
 try {
     $conn = getConn();
     $logged_on = isLoggedIn($conn);
+    if ($logged_on){
+        $curUser = getLoggedInUser($conn);
+    }
 } catch (dbConnNotCreatedException $e) {
     $conn = null;
     header($_SERVER["SERVER_PROTOCOL"] . ' 500 Internal Server Error', true, 500);
@@ -16,9 +19,7 @@ try {
     die();
 }
 
-if ($logged_on){
-    $curUser = getLoggedInUser($conn);
-}
+
 ?>
 <html lang="en">
     <head>

@@ -3,6 +3,39 @@ body {
     padding-top: 70px; /* Adds some padding at the top so no content is hidden by the nav bar*/
 }
 
+.reply {
+    z-index: 1000000;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: rgba(0,0, 0, 0.7);
+}
+
+.reply .exit-button {
+    float: right;
+    color: #c6c6c6;
+    cursor: pointer;
+}
+
+
+.post-thread .origin .post-current .thread-ext-cont {
+    padding-bottom: 10px;
+}
+
+.post-thread .origin .post-current .thread-extender {
+    height: 100%;
+    border-left: 3px solid #cccccc;
+    margin-left: 20px;
+}
+
+.post-thread div.replies {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
 .post {
     background-color: #eeeeee;
     padding: 10px;
@@ -15,6 +48,13 @@ body {
     border-right: 1px solid #d2d2d2;
 
     border-radius: 5px;
+}
+
+.post a.post-link {
+    color: initial;
+}
+.post a.post-link:hover {
+    text-decoration: none;
 }
 
 .post .profile-image img{
