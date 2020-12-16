@@ -433,6 +433,12 @@ if($logged_on && !is_null($pageUser)) {
                 <?php
             }
 
+        } else {
+            ?>
+            <div class="alert alert-light" role="alert">
+                This user has hidden this information.
+            </div>
+            <?php
         }
 
         ?>
@@ -501,7 +507,13 @@ if($logged_on && !is_null($pageUser)) {
                 </div>
                 <?php
             }
+        } else {
+            ?>
 
+            <div class="alert alert-light" role="alert">
+                This user has hidden this information.
+            </div>
+            <?php
         }
 
         ?>
