@@ -29,18 +29,19 @@ try {
             require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";
         ?>
     </head>
-    <body>
+<body <?php if(!$logged_on) { echo "class='no-top-pad'"; }?>>
     <?php
 
     require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
 
     ?>
 
+
+    <?php
+    if($logged_on){
+        ?>
     <div class="container home-feed">
-        <?php
-        if($logged_on){
-            ?>
-            <div class="posts">
+        <div class="posts">
                 <?php
                 // Query database
                 $sql = "SELECT posts.content, posts.postID, users.id, users.name, users.username, users.displayImageFilename, post_likes.likeID, 
@@ -151,20 +152,47 @@ try {
 
                 ?>
             </div>
-        <?php
-        } else {
-            ?>
+    </div>
+    <?php
+    } else {
+    ?>
 
-            <div class="alert-alert-dark" role="alert">
-                You need to log on first.
+    <div class="container-fluid home-page-layout h-100">
+        <div class="row h-100 w-100">
+            <div class="col-lg-4 navigator">
+                <div class="row h-100">
+                    <div class="col-sm-12 pb-2 mt-auto d-flex justify-content-center">
+                        <a href="http://<?php echo $_SERVER["SERVER_NAME"] ?>/account/" class="btn btn-lg btn-small btn-block btn-dark">Login</a>
+                    </div>
+                    <div class="col-sm-12 pt-2 mx-auto mb-auto d-flex justify-content-center">
+                        <a href="http://<?php echo $_SERVER["SERVER_NAME"] ?>/account/?mode=sign-up" class="btn btn-lg btn-block btn-outline-dark">Sign-up</a>
+                    </div>
+                </div>
             </div>
+            <div class="col-lg-8 eye-catcher">
+                <div class="row h-100">
+                    <div class="col align-self-center">
+                        <div class="col-12 py-3 d-flex justify-content-center tag-line">
+                            <h1>Find friends</h1>
+                        </div>
 
-            <?php
-        }
-        ?>
+                        <div class="col-12 py-3 d-flex justify-content-center tag-line">
+                            <h3>Find love</h3>
+                        </div>
+                        <div class="col-12 py-3 d-flex justify-content-center mb-auto tag-line">
+                            <h5>Find yourself</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    </body>
+    <?php
+    }
+    ?>
+
+</body>
 </html>
 
 <?php

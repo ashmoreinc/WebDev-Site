@@ -3,6 +3,27 @@ body {
     padding-top: 70px; /* Adds some padding at the top so no content is hidden by the nav bar*/
 }
 
+body.no-top-pad {
+    padding-top: 0;
+}
+
+.container-fluid.home-page-layout {
+    padding: 0;
+}
+
+.container-fluid.home-page-layout .row {
+    margin-left: 0;
+    margin-right:0;
+}
+
+.home-page-layout .eye-catcher {
+    background-color: #222222;
+}
+
+.home-page-layout .eye-catcher .tag-line{
+    color: #fefefe;
+}
+
 .reply {
     z-index: 1000000;
     position: fixed;
@@ -102,6 +123,10 @@ body {
 
 .post .content hr {
     margin-top: 3px;
+}
+
+.post .content .date {
+    color: #888888;
 }
 
 .post .interact-splitter {

@@ -21,7 +21,7 @@ if (!is_null($conn)){
 ?>
 <html lang="en">
     <head>
-        <title>Login</title>
+        <title>Login/Sign-up</title>
 
         <?php // Import the header from a central location
         require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/standardhead.php";

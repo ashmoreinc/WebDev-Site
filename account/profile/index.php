@@ -310,7 +310,7 @@ if($logged_on && !is_null($pageUser)) {
             if($results->num_rows > 0) {
                 require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/Post.php";
                 while($row = $results->fetch_assoc()){
-                    $post = new Post($row["postID"], $row["replyToID"], $row["content"], "", "", $pageUser,
+                    $post = new Post($row["postID"], $row["replyToID"], $row["content"], "", $row["time"], $pageUser,
                         !is_null($row["likeID"]), $row["likes"], $row["replies"]);
 
                     echo $post->getWidget();

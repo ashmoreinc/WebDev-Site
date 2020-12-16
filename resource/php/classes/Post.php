@@ -135,6 +135,10 @@ class Post
         $html = str_replace("{REPLY_COUNT}", $this->replies, $html);
         $html = str_replace("{LIKE_BTN_TEXT}", $this->liked ? "Unlike" : "Like", $html);
 
+        // Date time section
+        $date = new DateTime($this->datetime);
+        $html = str_replace("{DATE}", $date->format("H:m d/m/Y"), $html);
+
         return $html;
 
     }
