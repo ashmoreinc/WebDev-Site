@@ -115,7 +115,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
                                         <img class="mr-auto ml-auto" src="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/resource/images/profile/" . ((is_null($row["displayImageFilename"]) || $row["displayImageFilename"] == "") ? "default.jpg" : $row["displayImageFilename"]); ?>">
                                     </a>
                                 </div>
-                                <div class="content col-md-8">
+                                <div class="content col-md-10">
                                     <div class="user-info row">
                                         <h1><?php echo $row["name"] ?></h1>
                                         <h5><a href="<?php echo "http://" . $_SERVER["SERVER_NAME"] . "/account/profile/?user=" . $row["username"] ?>">@<?php echo $row["username"] ?></a></h5>
@@ -135,30 +135,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
                                             ?></p>
                                     </div>
                                 </div>
-                                <div class="interact col-md-2">
-                                    <?php
-                                    $createFollowButton = true;
 
-                                    if($logged_on){
-                                        if(isset($row["firstUserID"])) {
-                                            if ($row["firstUserID"] == $curUser->getId()) {
-                                                if($row["isFollowing"] == 1) {
-                                                    $createFollowButton = false;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    if($createFollowButton) {
-                                        ?> <button type="button" class="btn btn-block btn-dark" onmouseup="follow('<?php echo  $row["username"]; ?>', this)">Follow</button> <?php
-                                    } else {
-                                        ?> <button type="button" class="btn btn-block btn-dark" onmouseup="unfollow('<?php echo $row["username"]; ?>', this)">Unfollow</button> <?php
-                                    }
-
-
-                                    ?>
-
-                                </div>
                             </div>
                         </div>
                         <?php
