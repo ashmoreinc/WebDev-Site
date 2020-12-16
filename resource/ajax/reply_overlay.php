@@ -54,7 +54,7 @@ if(isset($_POST["pid"])){
                         ?>
                         <h3>Reply</h3>
                         <hr>
-                        <form method="post" action="http://<?php echo $_SERVER["SERVER_NAME"] . "/account/profile/create_post.php"; ?>">
+                        <form method="post" action="http://<?php echo $_SERVER["SERVER_NAME"] . "/account/profile/post/create_post.php"; ?>">
                             <input type="hidden" name="repliesTo" value="<?php echo $postId; ?>">
                             <input type="hidden" name="navToPost" value="1">
                             <div class="form-group">

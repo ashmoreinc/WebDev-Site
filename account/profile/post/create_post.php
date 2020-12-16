@@ -13,6 +13,8 @@ function returnSuccess($retPostID=null){
     $return_addr = $url_parts["scheme"] . "://" . $url_parts["host"] . $url_parts["path"] . "?";
     parse_str($url_parts["query"], $query);
     unset($query["post-comp-error"]);
+    unset($query["del-succ"]);
+    unset($query["del-err"]);
     $query["post-comp-success"] = 1;
 
     $return_addr .= http_build_query($query);
@@ -31,6 +33,8 @@ function returnWithError($error) {
     $return_addr = $url_parts["scheme"] . "://" . $url_parts["host"] . $url_parts["path"] . "?";
     parse_str($url_parts["query"], $query);
     unset($query["post-comp-success"]);
+    unset($query["del-succ"]);
+    unset($query["del-err"]);
     $query["post-comp-error"] = $error;
 
     $return_addr .= http_build_query($query);

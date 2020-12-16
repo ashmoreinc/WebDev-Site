@@ -199,6 +199,23 @@ if($logged_on && !is_null($pageUser)) {
 
     <div class="container posts-section">
         <?php
+        // Check for post delete errors and success. Errors can show when no account is loaded. So we dont need to check
+        //  For an account
+        if(isset($_GET["del-err"])) {
+            ?>
+                <div class="alert alert-danger" role="alert">
+                    <?php steriliseInput($conn, $_GET["del-err"]) ?>
+                </div>
+            <?php
+        }
+
+        if(isset($_GET["del-succ"])) {
+            ?>
+            <div class="alert alert-success" role="alert">
+                Post successfully deleted.
+            </div>
+            <?php
+        }
 
         if($pageUser->getIsCurrentUser()){
             ?>
@@ -225,7 +242,7 @@ if($logged_on && !is_null($pageUser)) {
                 ?>
                 <h3>Compose new post</h3>
                 <hr>
-                <form method="post" action="http://<?php echo $_SERVER["SERVER_NAME"] . "/account/profile/create_post.php"; ?>">
+                <form method="post" action="http://<?php echo $_SERVER["SERVER_NAME"] . "/account/profile/post/create_post.php"; ?>">
                     <div class="form-group">
                         <textarea name="post-content" class="form-control" id="post-input-area" rows="3" placeholder="Tell the world something interesting..."></textarea>
                     </div>

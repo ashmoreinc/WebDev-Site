@@ -122,6 +122,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
             <a href="http://<?php echo $_SERVER["SERVER_NAME"]?>" class="btn btn-primary">Return Home</a>
             <?php
         } else {
+            $rtid = $post->getReplyToID();
             if(!is_null($post->getReplyToID())){
                 $replyTo = Post::getFromID($post->getReplyToID());
                 ?>
@@ -137,12 +138,9 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
                         </div>
                     </div>
                 <?php
-
-
             } else {
                 echo $post->getWidget();
             }
-
         }
         ?>
     </div>
@@ -187,7 +185,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/navbar.php";
 
             if($result->num_rows > 0) {
 
-                // Signify this is now the replies
+                // Signify this is now the replies with a horizontal line
                 ?>
                 <hr>
                 <?php

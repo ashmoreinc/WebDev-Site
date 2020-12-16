@@ -93,85 +93,29 @@ class Post
         }
     }
 
-    /**
-     * Returns a HTML widget for a post.
-     * @return string|null
-     */
-    public function getWidgetOld($showInteract=true): ?string{
-        if(is_null($this->user) || is_null($this->likes) || is_null($this->replies)){
-            return null;
-        }
-
-        if($showInteract) {
-            $widget = "<div class=\"post\">
-                            <div class=\"row\">
-                                <div class=\"col-lg-10 content\">
-                                    <div class=\"row user-info\">
-                                        <div class=\"img\">";
-        } else {
-            $widget = "<div class=\"post\">
-                            <div class=\"row\">
-                                <div class=\"col-lg-12 content\">
-                                    <div class=\"row user-info\">
-                                        <div class=\"img\">";
-        }
-
-        if(is_null($this->user->getDisplayImage()) || $this->user->getDisplayImage() == ""){
-            $widget .= "<img src=\"http://localhost/resource/images/profile/default.jpg\">";
-        } else {
-            $widget .= "<img src=\"http://localhost/resource/images/profile/" . $this->user->getDisplayImage() . "\">";
-        }
-
-        $widget .=  "</div>
-                                        <div class=\"name\">
-                                            <h3>" . $this->user->getName() . "</h3>
-                                        </div>
-                                        <div class=\"username\">
-                                            <a><a href=\"http://" . $_SERVER["SERVER_NAME"] . "/account/profile/?user=" . $this->user->getUsername() . "\">@" . $this->user->getUsername() . "</a></p>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class=\"row post-content\">
-                                        " . $this->content . "
-                                    </div>
-                                </div>" . "
-                                <div class=\"col-lg interact-splitter\">
-                                </div>
-                                <div class=\"col-lg-2 interact\">
-                                    <div class=\"row\">
-                                        <div class=\"col-sm-4 like-count\">
-                                            " . $this->likes . "
-                                        </div>
-                                        <div class=\"col-sm-8 like-button\">";
-
-        if(is_null($this->liked) || $this->liked==false){
-            $widget .= "<button class=\"btn btn-dark btn-block mt-auto\" onclick=\"switchLike(" . $this->postID . ", this)\">Like</button>";
-        } else {
-            $widget .= "<button class=\"btn btn-dark btn-block mt-auto\" onclick=\"switchLike(" . $this->postID . ", this)\">Unlike</button>";
-        }
-
-
-        $widget .= "</div>
-                                    </div>
-                                    <hr>
-                                    <div class=\"row\">
-                                        <div class=\"col-sm-4 reply-count\">
-                                            " . $this->replies . "
-                                        </div>
-                                        <div class=\"col-sm-8 like-button\">
-                                            <button class=\"btn btn-dark btn-block\">Reply</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>";
-
-        return $widget;
-    }
-
     public function getWidget($showInteract=true): ?string{
         if($showInteract){
             $fileLocation = $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/postFormat.html";
+
+            // Now check if we own the post
+            require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/dbconn.php";
+            require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/classes/dbConnNotCreatedException.php";
+            require_once $_SERVER["DOCUMENT_ROOT"] . "/resource/php/session_management.php";
+
+            try {
+                $conn = getConn();
+            } catch (dbConnNotCreatedException $e) {
+                return null;
+            }
+            // Get the current user
+            $curUser = getLoggedInUser($conn);
+
+            if(!is_null($curUser)){
+                if($this->user->getId() == $curUser->getId()) {
+                    $fileLocation = $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/postFormatOwned.html";
+                }
+            }
+
         } else {
             $fileLocation = $_SERVER["DOCUMENT_ROOT"] . "/resource/site-elements/postFormatNoInteract.html";
         }
@@ -205,9 +149,9 @@ class Post
     }
 
     /**
-     * @return int
+     * @return null|int
      */
-    public function getReplyToID(): int
+    public function getReplyToID(): ?int
     {
         return $this->replyToID;
     }
@@ -221,9 +165,9 @@ class Post
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getMediaFilename(): string
+    public function getMediaFilename(): ?string
     {
         return $this->mediaFilename;
     }
